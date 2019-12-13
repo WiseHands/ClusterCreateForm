@@ -1,18 +1,20 @@
 {
-  "name": "wise-shopping-cart",
+  "name": "wise-shopping-cart-container",
   "version": "0.0.8",
   "description": "shopping cart for Wise Hands project",
   "author": "WiseHands Team",
   "repository": "WiseHands/GenericShoppingCart",
-  "main": "wise-shopping-cart.js",
+  "main": "wise-shopping-cart-container.js",
   "dependencies": {
+    "@polymer/app-layout": "^3.1.0",
     "@polymer/iron-ajax": "^3.0.1",
     "@polymer/iron-icons": "^3.0.1",
     "@polymer/iron-image": "^3.0.2",
     "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-card": "^3.0.1",
     "@polymer/paper-icon-button": "^3.0.2",
-    "@polymer/polymer": "^3.0.0"
+    "@polymer/polymer": "^3.0.0",
+    "wise-shopping-cart": "github:WiseHands/GenericShoppingCart"
   },
   "devDependencies": {
     "@polymer/iron-demo-helpers": "^3.1.0",
