@@ -23,6 +23,9 @@ class WiseShoppingCartContainer extends PolymerElement {
         .order-details {
             flex: .4;
         }
+        .cart {
+          max-width: 100%;
+        }
       </style>
       <div>
 
@@ -36,7 +39,7 @@ class WiseShoppingCartContainer extends PolymerElement {
               <paper-radio-button name="CashOnDelivery">Самовивіз</paper-radio-button>
             </paper-radio-group>
           </div>
-        </div>      
+        </div>
       </div>
     `;
   }
