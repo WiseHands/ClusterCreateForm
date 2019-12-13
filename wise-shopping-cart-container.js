@@ -2,29 +2,42 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-layout.js';
 import '@polymer/iron-image/iron-image.js';
 import 'wise-shopping-cart/wise-shopping-cart.js';
+import '@polymer/paper-radio-button/paper-radio-button.js';
+import '@polymer/paper-radio-group/paper-radio-group.js';
 
 class WiseShoppingCartContainer extends PolymerElement {
   static get template() {
     return html`
       <style>
-      /*:host {*/
-        /*position: fixed;*/
-        /*width: 100%;*/
-      /*}*/
-        app-header {
-          background-color: #ebebeb;
-          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+        section {
+          display: block;
+        }
+        .left-empty-container, .right-empty-container {
+            flex: .2;
+        }
+        .cart-container {
+        }
+        /*wise-shopping-cart {*/
+            /*flex: .6;*/
+        /*}*/
+        .order-details {
+            flex: .4;
         }
       </style>
-      <app-header-layout fullbleed>
-        <app-header slot="header" fixed effects="waterfall">
-          <app-toolbar>
-          <div></div>
-              <iron-image sizing="contain" width="30" height="30" src="/images/wiseblack.png"></iron-image>
-          </app-toolbar>
-          <wise-shopping-cart></wise-shopping-cart>
-        </app-header>
-      </app-header-layout>
+      <div>
+
+        <div class="cart-container">
+        <div class="cart">          <wise-shopping-cart></wise-shopping-cart>
+</div>
+          <div class="order-details">
+            <paper-radio-group selected="Courier">
+              <paper-radio-button name="Courier">Кур'єр</paper-radio-button>
+              <paper-radio-button name="NewPost">Нова Пошта</paper-radio-button>
+              <paper-radio-button name="CashOnDelivery">Самовивіз</paper-radio-button>
+            </paper-radio-group>
+          </div>
+        </div>      
+      </div>
     `;
   }
   constructor() {
