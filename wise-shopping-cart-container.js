@@ -1,9 +1,9 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import '@polymer/app-layout/app-layout.js';
 import '@polymer/iron-image/iron-image.js';
 import 'wise-shopping-cart/wise-shopping-cart.js';
 import '@polymer/paper-radio-button/paper-radio-button.js';
 import '@polymer/paper-radio-group/paper-radio-group.js';
+import '@polymer/paper-card/paper-card.js';
 
 class WiseShoppingCartContainer extends PolymerElement {
   static get template() {
@@ -12,33 +12,75 @@ class WiseShoppingCartContainer extends PolymerElement {
         section {
           display: block;
         }
-        .left-empty-container, .right-empty-container {
-            flex: .2;
-        }
-        .cart-container {
-        }
-        /*wise-shopping-cart {*/
-            /*flex: .6;*/
-        /*}*/
         .order-details {
-            flex: .4;
         }
         .cart {
-          max-width: 100%;
+          display: flex;
+        }
+        paper-radio-group {
+          display: flex;
+          flex-direction: column;
+          padding: 0 1em;
+        }
+        h3 {
+          padding: 0 1em;
+
+        }
+        wise-shopping-cart {
+          margin-right: .5em;
+          flex: 1;
+        }
+        paper-radio-button[name="Courier"] {
+          padding-top: 0;
+        }
+        .con-1 {
+          width: 80%;
+
+        }
+        .con-2 {
+          width: 20%;
+        }
+
+        .order-details {
+          display: flex;
+        }
+
+        paper-card {
+          flex: 1;
+        }
+
+        @media (max-width: 750px) {
+          .cart {
+            flex-direction: column;
+          }
+          .con-1, .con-2 {
+            width: 100%;
+          }
+          wise-shopping-cart {
+            margin-right: 0;
+            
+          }
         }
       </style>
       <div>
 
         <div class="cart-container">
-        <div class="cart">          <wise-shopping-cart></wise-shopping-cart>
-</div>
-          <div class="order-details">
-            <paper-radio-group selected="Courier">
-              <paper-radio-button name="Courier">Кур'єр</paper-radio-button>
-              <paper-radio-button name="NewPost">Нова Пошта</paper-radio-button>
-              <paper-radio-button name="CashOnDelivery">Самовивіз</paper-radio-button>
-            </paper-radio-group>
+        <div class="cart">
+          <div class="con-1">
+          <wise-shopping-cart></wise-shopping-cart>
           </div>
+          <div class="con-2">
+          <div class="order-details">
+            <paper-card>
+              <h3>Тип доставки:</h3>
+              <paper-radio-group selected="Courier">
+                <paper-radio-button name="Courier">Кур'єр</paper-radio-button>
+                <paper-radio-button name="NewPost">Нова Пошта</paper-radio-button>
+                <paper-radio-button name="CashOnDelivery">Самовивіз</paper-radio-button>
+              </paper-radio-group>
+            </paper-card>
+          </div></div>
+        </div>
         </div>
       </div>
     `;
