@@ -11,11 +11,9 @@
   "builds": [{
     "bundle": true,
     "preset": "es5-bundled",
-    "html": { "minify": false},
     "js": {"compile": true, "minify": true},
     "css": {"minify": true},
-    "addServiceWorker": false,
-    "addPushManifest": true
+    "html": {"minify": true}
   }],
   "moduleResolution": "node",
   "npm": true,

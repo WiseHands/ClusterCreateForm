@@ -1,9 +1,9 @@
 {
   "name": "wise-shopping-cart-container",
-  "version": "0.0.8",
-  "description": "shopping cart for Wise Hands project",
+  "version": "0.0.10",
+  "description": "container component for shopping cart",
   "author": "WiseHands Team",
-  "repository": "WiseHands/GenericShoppingCart",
+  "repository": "WiseHands/ShoppingCartContainer",
   "main": "wise-shopping-cart-container.js",
   "dependencies": {
     "@polymer/app-layout": "^3.1.0",

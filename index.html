@@ -1,15 +1,26 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0;url=demo/" />
-    <title>wise-shopping-cart</title>
-  </head>
-  <body>
-    <!--
-        Visit demo/index.html to see live examples of your element running.
-        This page will automatically redirect you there when run in the browser
-        with `polymer serve`.
-      -->
-  </body>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <title>wise-shopping-cart demo</title>
+
+  <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+
+  <script type="module" src="/wise-shopping-cart-container.js"></script>
+
+  <custom-style>
+    <style is="custom-style">
+      body {
+        margin: 0;
+      }
+    </style>
+  </custom-style>
+</head>
+<body>
+<main>
+  <wise-shopping-cart-container></wise-shopping-cart-container>
+</main>
+</body>
 </html>
