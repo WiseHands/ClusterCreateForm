@@ -1,21 +1,27 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/wise-shopping-cart.js",
+  "shell": "wise-shopping-cart-container.js",
   "sources": [
-    "src/**.js",
-    "manifest/**",
     "package.json"
   ],
   "extraDependencies": [
-    "manifest.json",
+    "node_modules/@webcomponents/webcomponentsjs/*.js",
     "node_modules/@webcomponents/webcomponentsjs/bundles/**"
   ],
   "builds": [{
-    "name": "mybuild",
+    "bundle": true,
     "preset": "es5-bundled",
     "html": { "minify": false},
+    "js": {"compile": true, "minify": true},
+    "css": {"minify": true},
     "addServiceWorker": false,
     "addPushManifest": true
-  }]
-
+  }],
+  "moduleResolution": "node",
+  "npm": true,
+  "lint": {
+    "rules": [
+      "polymer-3"
+    ]
+  }
 }
