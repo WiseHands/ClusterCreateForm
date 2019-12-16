@@ -13,6 +13,7 @@
     "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-card": "^3.0.1",
     "@polymer/paper-icon-button": "^3.0.2",
+    "@polymer/paper-input": "^3.1.0",
     "@polymer/paper-radio-group": "^3.0.1",
     "@polymer/polymer": "^3.0.0",
     "wise-shopping-cart": "github:WiseHands/GenericShoppingCart"

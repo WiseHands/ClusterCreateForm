@@ -4,6 +4,7 @@ import 'wise-shopping-cart/wise-shopping-cart.js';
 import '@polymer/paper-radio-button/paper-radio-button.js';
 import '@polymer/paper-radio-group/paper-radio-group.js';
 import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-input/paper-input.js';
 
 class WiseShoppingCartContainer extends PolymerElement {
   static get template() {
@@ -22,16 +23,16 @@ class WiseShoppingCartContainer extends PolymerElement {
           flex-direction: column;
           padding: 0 1em;
         }
+        paper-radio-group :first-child {
+          padding-top: 0;
+        }
         h3 {
-          padding: 0 1em;
+          padding: 0 .5em;
 
         }
         wise-shopping-cart {
           margin-right: .5em;
           flex: 1;
-        }
-        paper-radio-button[name="Courier"] {
-          padding-top: 0;
         }
         .con-1 {
           width: 80%;
@@ -43,10 +44,47 @@ class WiseShoppingCartContainer extends PolymerElement {
 
         .order-details {
           display: flex;
+          flex-direction: column;
         }
 
         paper-card {
           flex: 1;
+          margin-bottom: 1em;
+          padding-bottom: .5em;
+        }
+        
+        span[slot=prefix] {
+            margin-right: .5em;
+        }
+        
+        paper-input {
+            padding: 0 1em;
+        }
+        
+        h1 {
+          font-size: 1.8rem;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+        
+         paper-button {
+            background-color: #fff;
+            color: #000;
+            border: 2px solid #000;
+            border-radius: 0;
+            width: fit-content;
+            margin-right: 0;
+        }
+        paper-button:hover {
+            background-color: #000;
+            color: #fff;
+            border: 2px solid #fff;
+        }
+        
+        .total-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
         }
 
         @media (max-width: 750px) {
@@ -63,7 +101,6 @@ class WiseShoppingCartContainer extends PolymerElement {
         }
       </style>
       <div>
-
         <div class="cart-container">
         <div class="cart">
           <div class="con-1">
@@ -79,7 +116,28 @@ class WiseShoppingCartContainer extends PolymerElement {
                 <paper-radio-button name="CashOnDelivery">Самовивіз</paper-radio-button>
               </paper-radio-group>
             </paper-card>
-          </div></div>
+            <paper-card>
+              <h3>Тип оплати:</h3>
+              <paper-radio-group selected="Online">
+                <paper-radio-button name="Online">Онлайн</paper-radio-button>
+                <paper-radio-button name="Cash">Готівкою</paper-radio-button>
+              </paper-radio-group>
+            </paper-card>
+            <paper-card>
+              <h3>Замовник:</h3>
+                <paper-input label="Ім'я"></paper-input>
+                <paper-input pattern="/^\\d{9}$/" label="Телефон">
+                    <span slot="prefix">+380</span>
+                </paper-input>
+                <paper-input label="Коментар"></paper-input>
+
+            </paper-card>
+            <div class="total-container">
+              <h1>СУМА: 750 грн</h1>
+              <paper-button>NEXT</paper-button>
+            </div>
+          </div>
+          </div>
         </div>
         </div>
       </div>
