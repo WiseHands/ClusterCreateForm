@@ -1,9 +1,10 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import 'wise-shopping-cart/wise-shopping-cart.js';
+import '/node_modules/wise-shopping-cart/wise-shopping-cart.js';
 import '@polymer/paper-radio-group/paper-radio-group.js';
 import '@polymer/paper-radio-button/paper-radio-button.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-input/paper-input.js';
+import '@polymer/iron-ajax/iron-ajax.js';
 
 class WiseShoppingCartContainer extends PolymerElement {
   static get template() {
@@ -131,17 +132,28 @@ class WiseShoppingCartContainer extends PolymerElement {
           </div>
         </div>
       </div>
+      <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
     `;
   }
   constructor() {
     super();
-    const items = {"uuid":"92df3d79-4358-40f1-92c2-f73b8eb9ccda","deliveryType":"COURIER","paymentType":"CASHONDELIVERY","lineItemList":[{"uuid":"402881ce6eea99e3016eeb8023a00002","product":{"uuid":"402881ce6df8da72016e0296b1180006","name":"3","description":"3","price":100.0,"categoryName":"test","categoryUuid":"402881ce6d2a3296016d2a336a6f0017","isActive":true,"mainImage":{"uuid":"402881ce6df8da72016e0296b1150005","filename":"e1d433fd-df6c-4f3c-b16d-6a3cabf5a27b.jpg"},"properties":[],"images":[{"uuid":"402881ce6df8da72016e0296b1150005","filename":"e1d433fd-df6c-4f3c-b16d-6a3cabf5a27b.jpg"}]},"quantity":2},{"uuid":"402881ce6eea99e3016eeb802ba50003","product":{"uuid":"402881ce6df8da72016e0296e3970008","name":"Best Pizza Ever with papperoniasdasdadsads","description":"4","price":4.0,"categoryName":"test","categoryUuid":"402881ce6d2a3296016d2a336a6f0017","isActive":true,"mainImage":{"uuid":"402881ce6df8da72016e0296e3950007","filename":"3401a4b7-7cef-4552-a03f-1cedaec19070.jpg"},"properties":[],"images":[{"uuid":"402881ce6df8da72016e0296e3950007","filename":"3401a4b7-7cef-4552-a03f-1cedaec19070.jpg"}]},"quantity":2}],"clientName":"564","clientPhone":"4564","clientComments":"456444"};
-    this.set('cartItems', items.lineItemList);
   }
 
   ready() {
     super.ready();
-    this.addEventListener('decrease-item-quantity', event => console.log(event));
+    this._generateRequest('GET', 'http://localhost:3334/api/cart?cartId=6b342119-61fc-40f1-91af-876105fd6f2b');
+    this.addEventListener('decrease-item-quantity', event => {
+        this._generateRequest('DELETE', `http://localhost:3334/api/cart/decrease-quantity?uuid=${event.detail}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+      }
+    );
+    this.addEventListener('increase-item-quantity', event => {
+        this._generateRequest('POST', `http://localhost:3334/api/cart/increase-quantity?uuid=${event.detail}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+      }
+    );this.addEventListener('remove-item', event => {
+        this._generateRequest('DELETE', `http://localhost:3334/api/cart?uuid=${event.detail}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+      }
+    );
+
   }
 
   static get properties() {
@@ -166,7 +178,18 @@ class WiseShoppingCartContainer extends PolymerElement {
       }
     });
     const isValid = inputs.length === isValidCounter;
-    console.log(inputs, isValid);
+  }
+
+  _generateRequest (method, url) {
+    const ajax = this.$.ajax;
+    ajax.method = method;
+    ajax.url = url;
+    ajax.generateRequest();
+  }
+
+  _onLastResponseChanged (event, response) {
+    const cartData = response.value;
+    this.set('cartItems', cartData ? cartData.lineItemList : []);
   }
 
 }
