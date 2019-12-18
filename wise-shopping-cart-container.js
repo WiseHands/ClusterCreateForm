@@ -72,6 +72,10 @@ class WiseShoppingCartContainer extends PolymerElement {
             color: #fff;
             border: 2px solid #fff;
         }
+        paper-button[disabled] {
+            border: 2px solid grey;
+            color: grey;
+        }
         .total-container {
             display: flex;
             flex-direction: column;
@@ -96,36 +100,36 @@ class WiseShoppingCartContainer extends PolymerElement {
         <div class="cart-container">
           <div class="cart">
             <div class="shopping-cart-container">
-                <wise-shopping-cart cart-items="[[cartItems]]"></wise-shopping-cart>
+                <wise-shopping-cart cart-items="[[cart.lineItemList]]"></wise-shopping-cart>
             </div>
             <div class="order-details-container">
               <div class="order-details">
                 <paper-card>
                   <h3>Тип доставки:</h3>
-                  <paper-radio-group selected="Courier">
-                    <paper-radio-button name="Courier">Кур'єр</paper-radio-button>
-                    <paper-radio-button name="NewPost">Нова Пошта</paper-radio-button>
-                    <paper-radio-button name="CashOnDelivery">Самовивіз</paper-radio-button>
+                  <paper-radio-group selected="[[_setSelectedDeliveryType(cart.deliveryType)]]" on-selected-changed="_onDeliveryTypeChange">
+                    <paper-radio-button name="COURIER">Кур'єр</paper-radio-button>
+                    <paper-radio-button name="NOVAPOSHTA">Нова Пошта</paper-radio-button>
+                    <paper-radio-button name="SELFTAKE">Самовивіз</paper-radio-button>
                   </paper-radio-group>
                 </paper-card>
                 <paper-card>
                   <h3>Тип оплати:</h3>
-                  <paper-radio-group selected="Online">
-                    <paper-radio-button name="Online">Онлайн</paper-radio-button>
-                    <paper-radio-button name="Cash">Готівкою</paper-radio-button>
+                  <paper-radio-group selected="[[_setSelectedPaymentType(cart.paymentType)]]" on-selected-changed="_onPaymentTypeChange">
+                    <paper-radio-button name="PAYONLINE">Онлайн</paper-radio-button>
+                    <paper-radio-button name="CASHONSPOT">Готівкою</paper-radio-button>
                   </paper-radio-group>
                 </paper-card>
                 <paper-card>
                   <h3>Замовник:</h3>
-                    <paper-input label="Ім'я" required error-message="Заповніть, будь ласка, це поле"></paper-input>
-                    <paper-input pattern="^\\d{9}$" label="Телефон" required error-message="Заповніть, будь ласка, це поле">
+                    <paper-input id="clientName" label="Ім'я" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientName]]"></paper-input>
+                    <paper-input id="clientPhone" pattern="^\\d{9}$" label="Телефон" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientPhone]]">
                         <span slot="prefix">+380</span>
                     </paper-input>
-                    <paper-input label="Коментар"></paper-input>
+                    <paper-input id="clientComment" label="Коментар" value="[[cart.clientComments]]"></paper-input>
                 </paper-card>
                 <div class="total-container">
-                  <h1>СУМА: 750 грн</h1>
-                  <paper-button on-tap="_proceed">NEXT</paper-button>
+                  <h1>СУМА: [[_calculateTotal(cart.lineItemList)]] грн</h1>
+                  <paper-button disabled=[[!cart.lineItemList.length]] on-tap="_proceed">NEXT</paper-button>
                 </div>
               </div>
             </div>
@@ -149,7 +153,8 @@ class WiseShoppingCartContainer extends PolymerElement {
     this.addEventListener('increase-item-quantity', event => {
         this._generateRequest('POST', `http://localhost:3334/api/cart/increase-quantity?uuid=${event.detail}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
       }
-    );this.addEventListener('remove-item', event => {
+    );
+    this.addEventListener('remove-item', event => {
         this._generateRequest('DELETE', `http://localhost:3334/api/cart?uuid=${event.detail}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
       }
     );
@@ -158,15 +163,13 @@ class WiseShoppingCartContainer extends PolymerElement {
 
   static get properties() {
     return {
-      cartItems: {
-        type: Array,
-        value: []
+      cart: {
+        type: Object,
+        value: {
+          lineItemList: []
+        }
       }
     };
-  }
-
-  _isInShoppingCartAnyItems (cartItemsLength) {
-    return cartItemsLength > 0;
   }
 
   _proceed () {
@@ -178,6 +181,19 @@ class WiseShoppingCartContainer extends PolymerElement {
       }
     });
     const isValid = inputs.length === isValidCounter;
+    if (isValid) {
+      this._sendClientData();
+    }
+  }
+
+  _sendClientData () {
+    const clientName = this.$.clientName.value;
+    const clientPhone = this.$.clientPhone.value;
+    const clientComment = this.$.clientComment.value;
+
+    this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?clientname=${clientName}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+    this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?clientphone=${clientPhone}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+    this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?clientcomments=${clientComment}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
   }
 
   _generateRequest (method, url) {
@@ -189,7 +205,31 @@ class WiseShoppingCartContainer extends PolymerElement {
 
   _onLastResponseChanged (event, response) {
     const cartData = response.value;
-    this.set('cartItems', cartData ? cartData.lineItemList : []);
+    this.set('cart', cartData ? cartData : {lineItemList: []});
+  }
+
+  _calculateTotal (items) {
+    let total = 0;
+    items.forEach(item => {
+      total += item.quantity * item.product.price;
+    });
+    return total;
+  }
+
+  _onDeliveryTypeChange (event, data) {
+    this._generateRequest('PUT', `http://localhost:3334/api/cart/delivery?deliverytype=${data.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+  }
+
+  _setSelectedDeliveryType (deliveryType) {
+    return deliveryType ? deliveryType : 'COURIER';
+  }
+
+  _onPaymentTypeChange (event, data) {
+    this._generateRequest('PUT', `http://localhost:3334/api/cart/payment?paymenttype=${data.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+  }
+
+  _setSelectedPaymentType (paymentType) {
+    return paymentType ? paymentType : 'ONLINE';
   }
 
 }
