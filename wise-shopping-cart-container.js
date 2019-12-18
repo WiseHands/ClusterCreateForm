@@ -51,6 +51,10 @@ class WiseShoppingCartContainer extends PolymerElement {
         span[slot=prefix] {
             margin-right: .5em;
         }
+        .error-span {
+          color: red;
+          min-height: 1.2em;
+         }
         paper-input {
             padding: 0 1em;
         }
@@ -106,27 +110,28 @@ class WiseShoppingCartContainer extends PolymerElement {
               <div class="order-details">
                 <paper-card>
                   <h3>Тип доставки:</h3>
-                  <paper-radio-group selected="[[_setSelectedDeliveryType(cart.deliveryType)]]" on-selected-changed="_onDeliveryTypeChange">
+                  <paper-radio-group id="deliveryType" selected="[[cart.deliveryType]]" on-selected-changed="_onDeliveryTypeChange">
                     <paper-radio-button name="COURIER">Кур'єр</paper-radio-button>
-                    <paper-radio-button name="NOVAPOSHTA">Нова Пошта</paper-radio-button>
+                    <paper-radio-button name="POSTSERVICE">Нова Пошта</paper-radio-button>
                     <paper-radio-button name="SELFTAKE">Самовивіз</paper-radio-button>
                   </paper-radio-group>
                 </paper-card>
                 <paper-card>
                   <h3>Тип оплати:</h3>
-                  <paper-radio-group selected="[[_setSelectedPaymentType(cart.paymentType)]]" on-selected-changed="_onPaymentTypeChange">
-                    <paper-radio-button name="PAYONLINE">Онлайн</paper-radio-button>
-                    <paper-radio-button name="CASHONSPOT">Готівкою</paper-radio-button>
+                  <paper-radio-group id="paymentType" selected="[[cart.paymentType]]" on-selected-changed="_onPaymentTypeChange">
+                    <paper-radio-button name="CREDITCARD">Онлайн</paper-radio-button>
+                    <paper-radio-button name="CASHONDELIVERY">Готівкою</paper-radio-button>
                   </paper-radio-group>
                 </paper-card>
                 <paper-card>
                   <h3>Замовник:</h3>
-                    <paper-input id="clientName" label="Ім'я" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientName]]"></paper-input>
-                    <paper-input id="clientPhone" pattern="^\\d{9}$" label="Телефон" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientPhone]]">
+                    <paper-input pattern=".*\\S.*" id="clientname" label="Ім'я" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientName]]" on-blur="_validateAndSend"></paper-input>
+                    <paper-input id="clientphone" pattern="^\\d{9}$" label="Телефон" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientPhone]]" on-blur="_validateAndSend">
                         <span slot="prefix">+380</span>
                     </paper-input>
-                    <paper-input id="clientComment" label="Коментар" value="[[cart.clientComments]]"></paper-input>
+                    <paper-input id="clientcomments" label="Коментар" value="[[cart.clientComments]]" on-blur="_validateAndSend"></paper-input>
                 </paper-card>
+                <span class="error-span">[[errorMessage]]</span>
                 <div class="total-container">
                   <h1>СУМА: [[_calculateTotal(cart.lineItemList)]] грн</h1>
                   <paper-button disabled=[[!cart.lineItemList.length]] on-tap="_proceed">NEXT</paper-button>
@@ -138,9 +143,6 @@ class WiseShoppingCartContainer extends PolymerElement {
       </div>
       <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
     `;
-  }
-  constructor() {
-    super();
   }
 
   ready() {
@@ -168,32 +170,32 @@ class WiseShoppingCartContainer extends PolymerElement {
         value: {
           lineItemList: []
         }
-      }
+      },
+      errorMessage: String
     };
   }
 
   _proceed () {
-    const inputs = this.shadowRoot.querySelectorAll('paper-input[required]');
-    let isValidCounter = 0;
-    inputs.forEach(input => {
-      if (input.validate()) {
-        isValidCounter ++;
-      }
-    });
-    const isValid = inputs.length === isValidCounter;
-    if (isValid) {
-      this._sendClientData();
+    const deliveryType = this.$.deliveryType;
+    const paymentType = this.$.paymentType;
+
+    if (!deliveryType.selected) {
+      this.set('errorMessage', 'Вкажіть, будь ласка, тип доставки');
+      return;
     }
+    if (!paymentType.selected) {
+      this.set('errorMessage', 'Вкажіть, будь ласка, тип оплати');
+      return;
+    }
+    this.set('errorMessage', '');
   }
 
-  _sendClientData () {
-    const clientName = this.$.clientName.value;
-    const clientPhone = this.$.clientPhone.value;
-    const clientComment = this.$.clientComment.value;
+  _validateAndSend (event) {
+    const targetElement = event.target;
+    if (targetElement.validate() && targetElement.value) {
+      this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?${targetElement.id}=${targetElement.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+    }
 
-    this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?clientname=${clientName}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
-    this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?clientphone=${clientPhone}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
-    this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?clientcomments=${clientComment}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
   }
 
   _generateRequest (method, url) {
@@ -220,16 +222,8 @@ class WiseShoppingCartContainer extends PolymerElement {
     this._generateRequest('PUT', `http://localhost:3334/api/cart/delivery?deliverytype=${data.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
   }
 
-  _setSelectedDeliveryType (deliveryType) {
-    return deliveryType ? deliveryType : 'COURIER';
-  }
-
   _onPaymentTypeChange (event, data) {
     this._generateRequest('PUT', `http://localhost:3334/api/cart/payment?paymenttype=${data.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
-  }
-
-  _setSelectedPaymentType (paymentType) {
-    return paymentType ? paymentType : 'ONLINE';
   }
 
 }
