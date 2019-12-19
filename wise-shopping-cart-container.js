@@ -127,8 +127,10 @@ class WiseShoppingCartContainer extends PolymerElement {
                 <paper-card>
                   <h3>Тип оплати:</h3>
                   <paper-radio-group id="paymentType" selected="[[cart.paymentType]]" on-selected-changed="_onPaymentTypeChange">
-                    <paper-radio-button name="CREDITCARD">Онлайн</paper-radio-button>
-                    <paper-radio-button name="CASHONDELIVERY">Готівкою</paper-radio-button>
+                    <template is="dom-if" if="[[shopConfig.onlinePaymentEnabled]]">
+                      <paper-radio-button name="CREDITCARD">Онлайн</paper-radio-button>
+                    </template>
+                      <paper-radio-button name="CASHONDELIVERY">Готівкою</paper-radio-button>
                   </paper-radio-group>
                 </paper-card>
                 
@@ -138,24 +140,24 @@ class WiseShoppingCartContainer extends PolymerElement {
                     <paper-input id="clientPhone" pattern="^\\d{9}$" label="Телефон" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientPhone]]" on-blur="_validateAndSend">
                         <span slot="prefix">+380</span>
                     </paper-input>
-                    <paper-input id="clientcomments" label="Коментар" value="[[cart.clientComments]]" on-blur="_validateAndSend"></paper-input>
+                    <paper-input id="clientComments" label="Коментар" value="[[cart.clientComments]]" on-blur="_validateAndSend"></paper-input>
                 </paper-card>
                 <template is="dom-if" if="[[_isAddressCardVisible(cart.deliveryType)]]">
                   <paper-card>
                     <h3>Адреса:</h3>
                     
-                    <template is="dom-if" if="[[_isCourierDeliveryType(cart.deliveryType)]]">
+                    <div hidden="[[!_isCourierDeliveryType(cart.deliveryType)]]">
                       <paper-input id="clientAddressStreetName" pattern=".*\\S.*" label="Вулиця" value="[[cart.clientAddressStreetName]]" required error-message="Заповніть, будь ласка, це поле" on-blur="_validateAndSendClientAddressInfo"></paper-input>
                       <paper-input id="clientAddressBuildingNumber" pattern=".*\\S.*" label="Будинок" value="[[cart.clientAddressBuildingNumber]]" required error-message="Заповніть, будь ласка, це поле" on-blur="_validateAndSendClientAddressInfo"></paper-input>
                       <paper-input id="clientAddressAppartmentNumber" label="Квартира" value="[[cart.clientAddressAppartmentNumber]]" on-blur="_validateAndSendClientAddressInfo"></paper-input>
-                    </template>
+                    </div>
                     
-                    <template is="dom-if" if="[[!_isCourierDeliveryType(cart.deliveryType)]]">
+                    <div hidden="[[_isCourierDeliveryType(cart.deliveryType)]]">
                       <paper-input id="clientCity" value="[[cart.clientCity]]" pattern=".*\\S.*" label="Місто" required error-message="Заповніть, будь ласка, це поле" on-blur="_validateAndSendClientPostInfo"></paper-input>
                       <paper-input id="clientPostDepartmentNumber" value="[[cart.clientPostDepartmentNumber]]" class="department-number" pattern="^[0-9]*$" label="Відділення" required error-message="Заповніть, будь ласка, це поле" on-blur="_validateAndSendClientPostInfo">
                         <span slot="prefix">№</span>
                       </paper-input>
-                    </template>
+                    </div>
                   </paper-card>
                 </template>
                 <span class="error-span">[[errorMessage]]</span>
@@ -169,11 +171,13 @@ class WiseShoppingCartContainer extends PolymerElement {
         </div>
       </div>
       <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
+      <iron-ajax id="shopConfigAjax" handle-as="json" on-last-response-changed="_onShopConfigLastResponse" url="http://localhost:3334/shop/details/public"></iron-ajax>
     `;
   }
 
   ready() {
     super.ready();
+    this.$.shopConfigAjax.generateRequest();
     this._generateRequest('GET', 'http://localhost:3334/api/cart?cartId=6b342119-61fc-40f1-91af-876105fd6f2b');
     this.addEventListener('decrease-item-quantity', event => {
         this._generateRequest('DELETE', `http://localhost:3334/api/cart/decrease-quantity?uuid=${event.detail}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
@@ -198,8 +202,14 @@ class WiseShoppingCartContainer extends PolymerElement {
           lineItemList: []
         }
       },
+      shopConfig: Object,
       errorMessage: String
     };
+  }
+
+  _onShopConfigLastResponse (event, response) {
+    const shopConfig = response.value;
+    this.set('shopConfig', shopConfig || {});
   }
 
   _proceed () {
