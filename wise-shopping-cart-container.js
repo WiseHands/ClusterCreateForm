@@ -88,6 +88,12 @@ class WiseShoppingCartContainer extends PolymerElement {
         .order-details :nth-last-child(2) h3 {
             margin-bottom: 0;
         }
+        .department-number {
+          padding-bottom: 1em;
+        }
+        #clientcomments {
+          padding-bottom: 1em;
+        }
         @media (max-width: 750px) {
           .cart {
             flex-direction: column;
@@ -108,6 +114,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             </div>
             <div class="order-details-container">
               <div class="order-details">
+              
                 <paper-card>
                   <h3>Тип доставки:</h3>
                   <paper-radio-group id="deliveryType" selected="[[cart.deliveryType]]" on-selected-changed="_onDeliveryTypeChange">
@@ -116,6 +123,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                     <paper-radio-button name="SELFTAKE">Самовивіз</paper-radio-button>
                   </paper-radio-group>
                 </paper-card>
+                
                 <paper-card>
                   <h3>Тип оплати:</h3>
                   <paper-radio-group id="paymentType" selected="[[cart.paymentType]]" on-selected-changed="_onPaymentTypeChange">
@@ -123,14 +131,33 @@ class WiseShoppingCartContainer extends PolymerElement {
                     <paper-radio-button name="CASHONDELIVERY">Готівкою</paper-radio-button>
                   </paper-radio-group>
                 </paper-card>
+                
                 <paper-card>
                   <h3>Замовник:</h3>
-                    <paper-input pattern=".*\\S.*" id="clientname" label="Ім'я" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientName]]" on-blur="_validateAndSend"></paper-input>
-                    <paper-input id="clientphone" pattern="^\\d{9}$" label="Телефон" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientPhone]]" on-blur="_validateAndSend">
+                    <paper-input pattern=".*\\S.*" id="clientName" label="Ім'я" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientName]]" on-blur="_validateAndSend"></paper-input>
+                    <paper-input id="clientPhone" pattern="^\\d{9}$" label="Телефон" required error-message="Заповніть, будь ласка, це поле" value="[[cart.clientPhone]]" on-blur="_validateAndSend">
                         <span slot="prefix">+380</span>
                     </paper-input>
                     <paper-input id="clientcomments" label="Коментар" value="[[cart.clientComments]]" on-blur="_validateAndSend"></paper-input>
                 </paper-card>
+                <template is="dom-if" if="[[_isAddressCardVisible(cart.deliveryType)]]">
+                  <paper-card>
+                    <h3>Адреса:</h3>
+                    
+                    <template is="dom-if" if="[[_isCourierDeliveryType(cart.deliveryType)]]">
+                      <paper-input id="clientAddressStreetName" pattern=".*\\S.*" label="Вулиця" value="[[cart.clientAddressStreetName]]" required error-message="Заповніть, будь ласка, це поле" on-blur="_validateAndSendClientAddressInfo"></paper-input>
+                      <paper-input id="clientAddressBuildingNumber" pattern=".*\\S.*" label="Будинок" value="[[cart.clientAddressBuildingNumber]]" required error-message="Заповніть, будь ласка, це поле" on-blur="_validateAndSendClientAddressInfo"></paper-input>
+                      <paper-input id="clientAddressAppartmentNumber" label="Квартира" value="[[cart.clientAddressAppartmentNumber]]" on-blur="_validateAndSendClientAddressInfo"></paper-input>
+                    </template>
+                    
+                    <template is="dom-if" if="[[!_isCourierDeliveryType(cart.deliveryType)]]">
+                      <paper-input id="clientCity" value="[[cart.clientCity]]" pattern=".*\\S.*" label="Місто" required error-message="Заповніть, будь ласка, це поле" on-blur="_validateAndSendClientPostInfo"></paper-input>
+                      <paper-input id="clientPostDepartmentNumber" value="[[cart.clientPostDepartmentNumber]]" class="department-number" pattern="^[0-9]*$" label="Відділення" required error-message="Заповніть, будь ласка, це поле" on-blur="_validateAndSendClientPostInfo">
+                        <span slot="prefix">№</span>
+                      </paper-input>
+                    </template>
+                  </paper-card>
+                </template>
                 <span class="error-span">[[errorMessage]]</span>
                 <div class="total-container">
                   <h1>СУМА: [[_calculateTotal(cart.lineItemList)]] грн</h1>
@@ -178,7 +205,8 @@ class WiseShoppingCartContainer extends PolymerElement {
   _proceed () {
     const deliveryType = this.$.deliveryType;
     const paymentType = this.$.paymentType;
-
+    const requiredInputs = Array.from(this.shadowRoot.querySelectorAll('paper-input[required]')).filter(input => input.offsetWidth > 0 && input.offsetHeight > 0);
+    let validInputs = 0;
     if (!deliveryType.selected) {
       this.set('errorMessage', 'Вкажіть, будь ласка, тип доставки');
       return;
@@ -188,6 +216,17 @@ class WiseShoppingCartContainer extends PolymerElement {
       return;
     }
     this.set('errorMessage', '');
+
+    requiredInputs.forEach(input => {
+      if (input.validate()) {
+        validInputs++;
+      }
+    });
+    const isValid = validInputs === requiredInputs.length;
+    if (isValid) {
+    //  do stuff
+      console.log('we are fucking valid!!!');
+    }
   }
 
   _validateAndSend (event) {
@@ -195,7 +234,6 @@ class WiseShoppingCartContainer extends PolymerElement {
     if (targetElement.validate() && targetElement.value) {
       this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?${targetElement.id}=${targetElement.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
     }
-
   }
 
   _generateRequest (method, url) {
@@ -218,12 +256,36 @@ class WiseShoppingCartContainer extends PolymerElement {
     return total;
   }
 
+  _validateAndSendClientAddressInfo (event) {
+    const targetElement = event.target;
+    if (targetElement.validate() && targetElement.value) {
+      this._generateRequest('PUT', `http://localhost:3334/api/cart/address/info?${targetElement.id}=${targetElement.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+    }
+  }
+
+  _validateAndSendClientPostInfo (event) {
+    const targetElement = event.target;
+    if (targetElement.validate() && targetElement.value) {
+      this._generateRequest('PUT', `http://localhost:3334/api/cart/post/info?${targetElement.id}=${targetElement.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+    }
+  }
+
   _onDeliveryTypeChange (event, data) {
     this._generateRequest('PUT', `http://localhost:3334/api/cart/delivery?deliverytype=${data.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
   }
 
   _onPaymentTypeChange (event, data) {
     this._generateRequest('PUT', `http://localhost:3334/api/cart/payment?paymenttype=${data.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+  }
+
+  _isAddressCardVisible (deliveryType) {
+    const isCourier = deliveryType === 'COURIER';
+    const isPostService = deliveryType === 'POSTSERVICE';
+    return isCourier || isPostService;
+  }
+
+  _isCourierDeliveryType (deliveryType) {
+    return deliveryType === 'COURIER';
   }
 
 }
