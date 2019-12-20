@@ -178,17 +178,17 @@ class WiseShoppingCartContainer extends PolymerElement {
   ready() {
     super.ready();
     this.$.shopConfigAjax.generateRequest();
-    this._generateRequest('GET', 'http://localhost:3334/api/cart?cartId=6b342119-61fc-40f1-91af-876105fd6f2b');
+    this._generateRequest('GET', `http://localhost:3334/api/cart?cartId=${this.cartId}`);
     this.addEventListener('decrease-item-quantity', event => {
-        this._generateRequest('DELETE', `http://localhost:3334/api/cart/decrease-quantity?uuid=${event.detail}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+        this._generateRequest('DELETE', `http://localhost:3334/api/cart/decrease-quantity?uuid=${event.detail}&cartId=${this.cartId}`);
       }
     );
     this.addEventListener('increase-item-quantity', event => {
-        this._generateRequest('POST', `http://localhost:3334/api/cart/increase-quantity?uuid=${event.detail}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+        this._generateRequest('POST', `http://localhost:3334/api/cart/increase-quantity?uuid=${event.detail}&cartId=${this.cartId}`);
       }
     );
     this.addEventListener('remove-item', event => {
-        this._generateRequest('DELETE', `http://localhost:3334/api/cart?uuid=${event.detail}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+        this._generateRequest('DELETE', `http://localhost:3334/api/cart?uuid=${event.detail}&cartId=${this.cartId}`);
       }
     );
 
@@ -201,6 +201,10 @@ class WiseShoppingCartContainer extends PolymerElement {
         value: {
           lineItemList: []
         }
+      },
+      cartId: {
+        type: String,
+        value: '159b7e55-367a-4c6c-99f5-154446f0d053'
       },
       shopConfig: Object,
       errorMessage: String
