@@ -295,7 +295,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     _validateAndSend(event) {
         const targetElement = event.target;
         if (targetElement.validate() && targetElement.value) {
-            this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?${targetElement.id}=${targetElement.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+            this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`);
         }
     }
 
@@ -322,23 +322,23 @@ class WiseShoppingCartContainer extends PolymerElement {
     _validateAndSendClientAddressInfo(event) {
         const targetElement = event.target;
         if (targetElement.validate() && targetElement.value) {
-            this._generateRequest('PUT', `http://localhost:3334/api/cart/address/info?${targetElement.id}=${targetElement.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+            this._generateRequest('PUT', `http://localhost:3334/api/cart/address/info?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`);
         }
     }
 
     _validateAndSendClientPostInfo(event) {
         const targetElement = event.target;
         if (targetElement.validate() && targetElement.value) {
-            this._generateRequest('PUT', `http://localhost:3334/api/cart/post/info?${targetElement.id}=${targetElement.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+            this._generateRequest('PUT', `http://localhost:3334/api/cart/post/info?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`);
         }
     }
 
     _onDeliveryTypeChange(event, data) {
-        this._generateRequest('PUT', `http://localhost:3334/api/cart/delivery?deliverytype=${data.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+        this._generateRequest('PUT', `http://localhost:3334/api/cart/delivery?deliverytype=${data.value}&cartId=${this.cartId}`);
     }
 
     _onPaymentTypeChange(event, data) {
-        this._generateRequest('PUT', `http://localhost:3334/api/cart/payment?paymenttype=${data.value}&cartId=6b342119-61fc-40f1-91af-876105fd6f2b`);
+        this._generateRequest('PUT', `http://localhost:3334/api/cart/payment?paymenttype=${data.value}&cartId=${this.cartId}`);
     }
 
     _isAddressCardVisible(deliveryType) {
