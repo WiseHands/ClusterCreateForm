@@ -189,16 +189,16 @@ class WiseShoppingCartContainer extends PolymerElement {
                                     <h3>Адреса:</h3>
 
                                     <div hidden="[[!_isCourierDeliveryType(cart.deliveryType)]]">
-                                        <paper-input id="clientAddressStreetName" pattern=".*\\S.*" label="Вулиця"
+                                        <paper-input id="street" pattern=".*\\S.*" label="Вулиця"
                                                      value="[[cart.client.address.street]]" required
                                                      error-message="Заповніть, будь ласка, це поле"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
-                                        <paper-input id="clientAddressBuildingNumber" pattern=".*\\S.*"
-                                                     label="Будинок" value="[[cart.client.address.appartment]]"
+                                        <paper-input id="building" pattern=".*\\S.*"
+                                                     label="Будинок" value="[[cart.client.address.building]]"
                                                      required error-message="Заповніть, будь ласка, це поле"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
-                                        <paper-input id="clientAddressAppartmentNumber" label="Квартира"
-                                                     value="[[cart.client.comments]]"
+                                        <paper-input id="appartment" label="Квартира"
+                                                     value="[[cart.client.address.appartment]]"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
                                     </div>
 
@@ -322,6 +322,9 @@ class WiseShoppingCartContainer extends PolymerElement {
     items.forEach(item => {
       total += item.quantity * item.price;
     });
+    if(this.cart.deliveryType === 'COURIER') {
+        total += this.cart.configuration.delivery.courier.deliveryPrice;
+    }
     return total;
   }
 
