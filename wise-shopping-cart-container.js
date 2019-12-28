@@ -42,11 +42,11 @@ class WiseShoppingCartContainer extends PolymerElement {
             }
 
             .shopping-cart-container {
-                width: 80%;
+                flex: 1;
             }
 
             .order-details-container {
-                width: 20%;
+                width: 30%;
             }
 
             .order-details {
@@ -135,7 +135,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             <div class="cart-container">
                 <div class="cart">
                     <div class="shopping-cart-container">
-                        <wise-shopping-cart cart-items="[[cart.lineItemList]]"></wise-shopping-cart>
+                        <wise-shopping-cart cart-items="[[cart.items]]"></wise-shopping-cart>
                     </div>
                     <div class="order-details-container">
                         <div class="order-details">
@@ -219,8 +219,8 @@ class WiseShoppingCartContainer extends PolymerElement {
                             </template>
                             <span class="error-span">[[errorMessage]]</span>
                             <div class="total-container">
-                                <h1>СУМА: [[_calculateTotal(cart.lineItemList)]] грн</h1>
-                                <paper-button disabled=[[!cart.lineItemList.length]] on-tap="_proceed">NEXT
+                                <h1>СУМА: [[_calculateTotal(cart.items)]] грн</h1>
+                                <paper-button disabled=[[!cart.items.length]] on-tap="_proceed">NEXT
                                 </paper-button>
                             </div>
                         </div>
@@ -234,17 +234,17 @@ class WiseShoppingCartContainer extends PolymerElement {
 
   ready() {
     super.ready();
-    this._generateRequest('GET', `http://localhost:3334/api/cart?cartId=${this.cartId}`);
+    this._generateRequest('GET', `${this.hostname}/api/cart?cartId=${this.cartId}`);
     this.addEventListener('decrease-item-quantity', event => {
         this._generateRequest('DELETE', `http://localhost:3334/api/cart/decrease-quantity?uuid=${event.detail}&cartId=${this.cartId}`);
       }
     );
     this.addEventListener('increase-item-quantity', event => {
-        this._generateRequest('POST', `http://localhost:3334/api/cart/increase-quantity?uuid=${event.detail}&cartId=${this.cartId}`);
+        this._generateRequest('POST', `${this.hostname}/api/cart/increase-quantity?uuid=${event.detail}&cartId=${this.cartId}`);
       }
     );
     this.addEventListener('remove-item', event => {
-        this._generateRequest('DELETE', `http://localhost:3334/api/cart?uuid=${event.detail}&cartId=${this.cartId}`);
+        this._generateRequest('DELETE', `${this.hostname}/api/cart?uuid=${event.detail}&cartId=${this.cartId}`);
       }
     );
 
@@ -255,12 +255,16 @@ class WiseShoppingCartContainer extends PolymerElement {
       cart: {
         type: Object,
         value: {
-          lineItemList: []
+          items: []
         }
       },
       cartId: {
         type: String,
-        value: '64d7d21e-6161-4694-bfa1-f9be21aad706'
+        value: '0ae1d89a-7766-42c8-8b41-7e8bb75ddfde'
+      },
+      hostname: {
+        type: String,
+        value: 'http://localhost:3334'
       },
       errorMessage: String
     };
@@ -296,7 +300,7 @@ class WiseShoppingCartContainer extends PolymerElement {
   _validateAndSend(event) {
     const targetElement = event.target;
     if (targetElement.validate() && targetElement.value) {
-      this._generateRequest('PUT', `http://localhost:3334/api/cart/client/info?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`);
+      this._generateRequest('PUT', `${this.hostname}/api/cart/client/info?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`);
     }
   }
 
@@ -309,13 +313,14 @@ class WiseShoppingCartContainer extends PolymerElement {
 
   _onLastResponseChanged(event, response) {
     const cartData = response.value;
-    this.set('cart', cartData ? cartData : {lineItemList: []});
+    console.log(cartData);
+    this.set('cart', cartData ? cartData : {items: []});
   }
 
   _calculateTotal(items) {
     let total = 0;
     items.forEach(item => {
-      total += item.quantity * item.product.price;
+      total += item.quantity * item.price;
     });
     return total;
   }
@@ -323,23 +328,23 @@ class WiseShoppingCartContainer extends PolymerElement {
   _validateAndSendClientAddressInfo(event) {
     const targetElement = event.target;
     if (targetElement.validate() && targetElement.value) {
-      this._generateRequest('PUT', `http://localhost:3334/api/cart/address/info?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`);
+      this._generateRequest('PUT', `${this.hostname}/api/cart/address/info?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`);
     }
   }
 
   _validateAndSendClientPostInfo(event) {
     const targetElement = event.target;
     if (targetElement.validate() && targetElement.value) {
-      this._generateRequest('PUT', `http://localhost:3334/api/cart/post/info?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`);
+      this._generateRequest('PUT', `${this.hostname}/api/cart/post/info?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`);
     }
   }
 
   _onDeliveryTypeChange(event, data) {
-    this._generateRequest('PUT', `http://localhost:3334/api/cart/delivery?deliverytype=${data.value}&cartId=${this.cartId}`);
+    this._generateRequest('PUT', `${this.hostname}/api/cart/delivery?deliverytype=${data.value}&cartId=${this.cartId}`);
   }
 
   _onPaymentTypeChange(event, data) {
-    this._generateRequest('PUT', `http://localhost:3334/api/cart/payment?paymenttype=${data.value}&cartId=${this.cartId}`);
+    this._generateRequest('PUT', `${this.hostname}/api/cart/payment?paymenttype=${data.value}&cartId=${this.cartId}`);
   }
 
   _isAddressCardVisible(deliveryType) {
