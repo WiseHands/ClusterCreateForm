@@ -138,7 +138,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             <div class="cart-container">
                 <div class="cart">
                     <div class="shopping-cart-container">
-                        <wise-shopping-cart cart-items="[[cart.items]]"></wise-shopping-cart>
+                        <wise-shopping-cart currency-label="[[currencyLabel]]" cart-items="[[cart.items]]"></wise-shopping-cart>
                     </div>
                     <div class="order-details-container">
                         <div class="order-details">
@@ -271,7 +271,12 @@ class WiseShoppingCartContainer extends PolymerElement {
         type: String,
           value: ''
       },
-      errorMessage: String
+      errorMessage: String,
+
+      currencyLabel: {
+        type: String,
+        value: 'USD'
+      }
     };
   }
 
