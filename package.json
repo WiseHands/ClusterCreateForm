@@ -5,6 +5,7 @@
   "author": "WiseHands Team",
   "repository": "WiseHands/ShoppingCartContainer",
   "main": "src/wise-shopping-cart-container.js",
+  "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "@polymer/app-layout": "^3.1.0",
     "@polymer/iron-ajax": "^3.0.1",
@@ -16,7 +17,7 @@
     "@polymer/paper-input": "^3.1.0",
     "@polymer/paper-radio-group": "^3.0.1",
     "@polymer/polymer": "^3.0.0",
-    "wise-shopping-cart": "github:WiseHands/GenericShoppingCart#78cc795d843b184addb2357638b60ec7bd4c4dfe"
+    "wise-shopping-cart": "github:WiseHands/GenericShoppingCart#0.1.7"
   },
   "devDependencies": {
     "@polymer/iron-demo-helpers": "^3.1.0",
