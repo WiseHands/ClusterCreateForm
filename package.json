@@ -4,7 +4,7 @@
   "description": "container component for shopping cart",
   "author": "WiseHands Team",
   "repository": "WiseHands/ShoppingCartContainer",
-  "main": "wise-shopping-cart-container.js",
+  "main": "src/wise-shopping-cart-container.js",
   "dependencies": {
     "@polymer/app-layout": "^3.1.0",
     "@polymer/iron-ajax": "^3.0.1",

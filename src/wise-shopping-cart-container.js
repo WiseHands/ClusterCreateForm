@@ -259,12 +259,11 @@ class WiseShoppingCartContainer extends PolymerElement {
         }
       },
       cartId: {
-        type: String,
-        value: '0ae1d89a-7766-42c8-8b41-7e8bb75ddfde'
+        type: String
       },
       hostname: {
         type: String,
-        value: 'http://localhost:3334'
+          value: ''
       },
       errorMessage: String
     };
