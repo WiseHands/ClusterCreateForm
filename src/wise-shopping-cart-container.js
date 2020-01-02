@@ -236,15 +236,15 @@ class WiseShoppingCartContainer extends PolymerElement {
     super.ready();
     this._generateRequest('GET', `${this.hostname}/api/cart?cartId=${this.cartId}`);
     this.addEventListener('decrease-item-quantity', event => {
-        this._generateRequest('DELETE', `http://localhost:3334/api/cart/decrease-quantity?uuid=${event.detail}&cartId=${this.cartId}`);
+        this._generateRequest('DELETE', this._generateRequestUrl('/api/cart/decrease-quantity', event.detail));
       }
     );
     this.addEventListener('increase-item-quantity', event => {
-        this._generateRequest('POST', `${this.hostname}/api/cart/increase-quantity?uuid=${event.detail}&cartId=${this.cartId}`);
+        this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', event.detail));
       }
     );
     this.addEventListener('remove-item', event => {
-        this._generateRequest('DELETE', `${this.hostname}/api/cart?uuid=${event.detail}&cartId=${this.cartId}`);
+        this._generateRequest('DELETE', this._generateRequestUrl('/api/cart/', event.detail));
       }
     );
 
@@ -267,6 +267,14 @@ class WiseShoppingCartContainer extends PolymerElement {
       },
       errorMessage: String
     };
+  }
+
+  _generateRequestUrl(urlpath, uuid) {
+    let url = this.hostname + urlpath + '?uuid=' + uuid;
+    if (this.cartId) {
+      url = url + "&cartId=" + this.cartId;
+    }
+    return url;
   }
 
   _proceed() {
