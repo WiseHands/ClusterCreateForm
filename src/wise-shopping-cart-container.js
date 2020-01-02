@@ -117,7 +117,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 padding-bottom: 1em;
             }
 
-            @media (max-width: 750px) {
+            @media (max-width: 1024px) {
                 .cart {
                     flex-direction: column;
                 }
@@ -234,7 +234,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
   ready() {
     super.ready();
-    this._generateRequest('GET', `${this.hostname}/api/cart?cartId=${this.cartId}`);
+    this._generateRequest('GET', `${this.hostname}/api/cart`);
       this.addEventListener('increase-item-quantity', event => {
               let params = '?uuid=' + event.detail;
               this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', params));
