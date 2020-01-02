@@ -336,6 +336,13 @@ class WiseShoppingCartContainer extends PolymerElement {
   _onLastResponseChanged(event, response) {
     const cartData = response.value;
     console.log(cartData);
+    this.dispatchEvent(new CustomEvent('shopping-cart-api-response',
+      {
+          detail: cartData,
+          bubbles: true,
+          composed: true
+      })
+    );
     this.set('cart', cartData ? cartData : {items: []});
   }
 
