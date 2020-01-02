@@ -16,7 +16,7 @@
     "@polymer/paper-input": "^3.1.0",
     "@polymer/paper-radio-group": "^3.0.1",
     "@polymer/polymer": "^3.0.0",
-    "wise-shopping-cart": "github:WiseHands/GenericShoppingCart"
+    "wise-shopping-cart": "github:WiseHands/GenericShoppingCart#78cc795d843b184addb2357638b60ec7bd4c4dfe"
   },
   "devDependencies": {
     "@polymer/iron-demo-helpers": "^3.1.0",

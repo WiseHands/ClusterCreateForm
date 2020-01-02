@@ -11,6 +11,9 @@ class WiseShoppingCartContainer extends PolymerElement {
     // language=HTML
     return html`
         <style>
+            :host {
+                display: block;
+            }
             section {
                 display: block;
             }
@@ -46,7 +49,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             }
 
             .order-details-container {
-                width: 30%;
+                width: 35%;
             }
 
             .order-details {
