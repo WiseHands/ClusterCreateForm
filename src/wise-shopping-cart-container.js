@@ -313,8 +313,13 @@ class WiseShoppingCartContainer extends PolymerElement {
     });
     const isValid = validInputs === requiredInputs.length;
     if (isValid) {
-      //  do stuff
-      console.log('we are fucking valid!!!');
+        this.dispatchEvent(new CustomEvent('proceed-with-shopping-cart',
+            {
+                detail: this.cart,
+                bubbles: true,
+                composed: true
+            })
+        );
     }
   }
 
