@@ -178,14 +178,14 @@ class WiseShoppingCartContainer extends PolymerElement {
                                 <h3>Замовник:</h3>
                                 <paper-input pattern=".*\\S.*" id="clientName" label="Ім'я" required
                                              error-message="Заповніть, будь ласка, це поле"
-                                             value="[[cart.client.name]]" on-blur="_validateAndSend"></paper-input>
+                                             value="[[cart.client.name]]" on-blur="_validateAndSendClientInfo"></paper-input>
                                 <paper-input id="clientPhone" pattern="^\\d{9}$" label="Телефон" required
                                              error-message="Заповніть, будь ласка, це поле"
-                                             value="[[cart.client.phone]]" on-blur="_validateAndSend">
+                                             value="[[cart.client.phone]]" on-blur="_validateAndSendClientInfo">
                                     <span slot="prefix">+380</span>
                                 </paper-input>
                                 <paper-input id="clientComments" label="Коментар" value="[[cart.client.comments]]"
-                                             on-blur="_validateAndSend"></paper-input>
+                                             on-blur="_validateAndSendClientInfo"></paper-input>
                             </paper-card>
                             <template is="dom-if" if="[[_isAddressCardVisible(cart.deliveryType)]]">
                                 <paper-card>
@@ -237,19 +237,27 @@ class WiseShoppingCartContainer extends PolymerElement {
 
   ready() {
     super.ready();
-    this._generateRequest('GET', `${this.hostname}/api/cart`);
-      this.addEventListener('increase-item-quantity', event => {
-              let params = '?uuid=' + event.detail;
-              this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', params));
-          }
-      );
+    const params = "?cartId=" + this.cartId;
+    const url = this._generateRequestUrl('/api/cart', params);
+    this._generateRequest('GET', url);
+
+
+    this.addEventListener('increase-item-quantity', event => {
+            let params = '?uuid=' + event.detail + "?cartId=" + this.cartId;;
+            this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', params));
+        }
+    );
+
+
     this.addEventListener('decrease-item-quantity', event => {
-        let params = '?uuid=' + event.detail;
+        let params = '?uuid=' + event.detail + "?cartId=" + this.cartId;;
         this._generateRequest('DELETE', this._generateRequestUrl('/api/cart/decrease-quantity', params));
       }
     );
+
+
     this.addEventListener('remove-item', event => {
-        let params = '?uuid=' + event.detail;
+        let params = '?uuid=' + event.detail + "?cartId=" + this.cartId;;
         this._generateRequest('DELETE', this._generateRequestUrl('/api/cart', params));
       }
     );
@@ -265,7 +273,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         }
       },
       cartId: {
-        type: String
+          type: String
       },
       hostname: {
         type: String,
@@ -280,13 +288,10 @@ class WiseShoppingCartContainer extends PolymerElement {
     };
   }
 
-  _generateRequestUrl(urlpath, params) {
-    let url = this.hostname + urlpath;
+  _generateRequestUrl(urlPath, params) {
+    let url = this.hostname + urlPath;
     if (params) {
         url = url + params;
-    }
-    if(this.cartId) {
-      url = url + "&cartId=" + this.cartId;
     }
     return url;
   }
@@ -320,23 +325,28 @@ class WiseShoppingCartContainer extends PolymerElement {
                 composed: true
             })
         );
+
+        //TODO
+        const params = "?cartId=" + this.cartId;
+        this._generateRequest('POST', this._generateRequestUrl('/order', params))
     }
+
   }
 
-  _validateAndSend(event) {
+  _validateAndSendClientInfo(event) {
     const targetElement = event.target;
     if (targetElement.validate() && targetElement.value) {
-      const params = '?' + targetElement.id + '=' + targetElement.value;
+      const params = '?' + targetElement.id + '=' + targetElement.value + "&cartId=" + this.cartId;
       this._generateRequest('PUT', this._generateRequestUrl('/api/cart/client/info', params));
     }
   }
 
   _generateRequest(method, url) {
-    const ajax = this.$.ajax;
-    ajax.method = method;
-    ajax.url = url;
-    ajax.generateRequest();
-  }
+        const ajax = this.$.ajax;
+        ajax.method = method;
+        ajax.url = url;
+        ajax.generateRequest();
+    }
 
   _onLastResponseChanged(event, response) {
     const cartData = response.value;
@@ -356,7 +366,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     items.forEach(item => {
       total += item.quantity * item.price;
     });
-    if(this.cart.deliveryType === 'COURIER') {
+    if (this.cart.deliveryType === 'COURIER') {
         total += this.cart.configuration.delivery.courier.deliveryPrice;
     }
     return total;
@@ -365,7 +375,8 @@ class WiseShoppingCartContainer extends PolymerElement {
   _validateAndSendClientAddressInfo(event) {
     const targetElement = event.target;
     if (targetElement.validate() && targetElement.value) {
-      const params = '?' + targetElement.id + '=' + targetElement.value;
+      const params = '?' + targetElement.id + '=' + targetElement.value + "&cartId=" + this.cartId;
+          + "&cartId=" + this.cartId;
       this._generateRequest('PUT', this._generateRequestUrl('/api/cart/address/info', params));
     }
   }
@@ -373,18 +384,18 @@ class WiseShoppingCartContainer extends PolymerElement {
   _validateAndSendClientPostInfo(event) {
     const targetElement = event.target;
     if (targetElement.validate() && targetElement.value) {
-      const params = '?' + targetElement.id + '=' + targetElement.value;
+      const params = '?' + targetElement.id + '=' + targetElement.value + "&cartId=" + this.cartId;
       this._generateRequest('PUT', this._generateRequestUrl('/api/cart/post/info', params));
     }
   }
 
   _onDeliveryTypeChange(event, data) {
-    const params = '?deliverytype=' + data.value;
+    const params = '?deliverytype=' + data.value + "&cartId=" + this.cartId;
     this._generateRequest('PUT', this._generateRequestUrl('/api/cart/delivery', params));
   }
 
   _onPaymentTypeChange(event, data) {
-      const params = '?paymenttype=' + data.value;
+      const params = '?paymenttype=' + data.value + "&cartId=" + this.cartId;;
       this._generateRequest('PUT', this._generateRequestUrl('/api/cart/payment', params));
   }
 
