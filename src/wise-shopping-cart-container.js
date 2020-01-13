@@ -408,7 +408,9 @@ class WiseShoppingCartContainer extends PolymerElement {
     const areThereAnyResults = results.length > 0;
     if(areThereAnyResults) {
         const firstResult = results[0];
-        console.log('latlng is: ', firstResult.geometry.location);
+        const params = '?lat=' + firstResult.geometry.location.lat + '&lng=' + firstResult.geometry.location.lng + "&cartId=" + this.cartId;
+        console.log("firstResult.geometry.location.Lat + '&lng=' + firstResult.geometry.location.Lng", firstResult.geometry.location.lat, firstResult.geometry.location.lng);
+        this._generateRequest('PUT', this._generateRequestUrl('/api/cart/address/info', params));
     }
 
   }
