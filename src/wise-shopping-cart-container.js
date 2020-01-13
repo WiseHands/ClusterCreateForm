@@ -254,7 +254,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
 
     this.addEventListener('increase-item-quantity', event => {
-            let params = '?uuid=' + event.detail + "&artId=" + this.cartId;
+            let params = '?uuid=' + event.detail + "&cartId=" + this.cartId;
             this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', params));
         }
     );
