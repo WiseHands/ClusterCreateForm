@@ -184,6 +184,8 @@ class WiseShoppingCartContainer extends PolymerElement {
                                              value="[[cart.client.phone]]" on-blur="_validateAndSend">
                                     <span slot="prefix">+380</span>
                                 </paper-input>
+                                <paper-input id="clientEmail" type="email" label="Email" value="[[cart.client.email]]" required
+                                             on-blur="_validateAndSend"></paper-input>
                                 <paper-input id="clientComments" label="Коментар" value="[[cart.client.comments]]"
                                              on-blur="_validateAndSend"></paper-input>
                             </paper-card>
@@ -200,8 +202,17 @@ class WiseShoppingCartContainer extends PolymerElement {
                                                      label="Будинок" value="[[cart.client.address.building]]"
                                                      required error-message="Заповніть, будь ласка, це поле"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
-                                        <paper-input id="appartment" label="Квартира"
-                                                     value="[[cart.client.address.appartment]]"
+                                        <paper-input id="floor" label="Поверх"
+                                                     value="[[cart.client.address.floor]]"
+                                                     on-blur="_validateAndSendClientAddressInfo"></paper-input>
+                                        <paper-input id="entrance" label="Під'їзд"
+                                                     value="[[cart.client.address.entrance]]"
+                                                     on-blur="_validateAndSendClientAddressInfo"></paper-input>
+                                        <paper-input id="entranceCode" label="Код до під'їзду"
+                                                     value="[[cart.client.address.entranceCode]]"
+                                                     on-blur="_validateAndSendClientAddressInfo"></paper-input>
+                                        <paper-input id="apartment" label="Квартира"
+                                                     value="[[cart.client.address.apartment]]"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
                                     </div>
 
