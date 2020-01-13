@@ -202,15 +202,15 @@ class WiseShoppingCartContainer extends PolymerElement {
                                                      label="Будинок" value="[[cart.client.address.building]]"
                                                      required error-message="Заповніть, будь ласка, це поле"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
-                                        <paper-input id="floor" label="Поверх"
-                                                     value="[[cart.client.address.floor]]"
-                                                     on-blur="_validateAndSendClientAddressInfo"></paper-input>
                                         <paper-input id="entrance" label="Під'їзд"
                                                      value="[[cart.client.address.entrance]]"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
                                         <paper-input id="entranceCode" label="Код до під'їзду"
                                                      value="[[cart.client.address.entranceCode]]"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
+                                        <paper-input id="floor" label="Поверх"
+                                                     value="[[cart.client.address.floor]]"
+                                                     on-blur="_validateAndSendClientAddressInfo"></paper-input>                                        
                                         <paper-input id="apartment" label="Квартира"
                                                      value="[[cart.client.address.apartment]]"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
@@ -254,21 +254,21 @@ class WiseShoppingCartContainer extends PolymerElement {
 
 
     this.addEventListener('increase-item-quantity', event => {
-            let params = '?uuid=' + event.detail + "?cartId=" + this.cartId;;
+            let params = '?uuid=' + event.detail + "&artId=" + this.cartId;
             this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', params));
         }
     );
 
 
     this.addEventListener('decrease-item-quantity', event => {
-        let params = '?uuid=' + event.detail + "?cartId=" + this.cartId;;
+        let params = '?uuid=' + event.detail + "&cartId=" + this.cartId;
         this._generateRequest('DELETE', this._generateRequestUrl('/api/cart/decrease-quantity', params));
       }
     );
 
 
     this.addEventListener('remove-item', event => {
-        let params = '?uuid=' + event.detail + "?cartId=" + this.cartId;;
+        let params = '?uuid=' + event.detail + "&cartId=" + this.cartId;
         this._generateRequest('DELETE', this._generateRequestUrl('/api/cart', params));
       }
     );
@@ -339,7 +339,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
         //TODO
         const params = "?cartId=" + this.cartId;
-        this._generateRequest('POST', this._generateRequestUrl('/order', params))
+        this._generateRequest('POST', this._generateRequestUrl('/order', params));
     }
 
   }
@@ -406,7 +406,7 @@ class WiseShoppingCartContainer extends PolymerElement {
   }
 
   _onPaymentTypeChange(event, data) {
-      const params = '?paymenttype=' + data.value + "&cartId=" + this.cartId;;
+      const params = '?paymenttype=' + data.value + "&cartId=" + this.cartId;
       this._generateRequest('PUT', this._generateRequestUrl('/api/cart/payment', params));
   }
 
