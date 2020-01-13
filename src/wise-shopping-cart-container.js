@@ -197,11 +197,11 @@ class WiseShoppingCartContainer extends PolymerElement {
                                         <paper-input id="street" pattern=".*\\S.*" label="Вулиця"
                                                      value="[[cart.client.address.street]]" required
                                                      error-message="Заповніть, будь ласка, це поле"
-                                                     on-blur="_validateAndSendClientAddressInfo"></paper-input>
+                                                     on-blur="_validateAndGeocodeAddress"></paper-input>
                                         <paper-input id="building" pattern=".*\\S.*"
                                                      label="Будинок" value="[[cart.client.address.building]]"
                                                      required error-message="Заповніть, будь ласка, це поле"
-                                                     on-blur="_validateAndSendClientAddressInfo"></paper-input>
+                                                     on-blur="_validateAndGeocodeAddress"></paper-input>
                                         <paper-input id="entrance" label="Під'їзд"
                                                      value="[[cart.client.address.entrance]]"
                                                      on-blur="_validateAndSendClientAddressInfo"></paper-input>
@@ -243,6 +243,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             </div>
         </div>
         <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
+        <iron-ajax id="geocodingAjax" handle-as="json" on-last-response-changed="_onGeocodingResponseChanged"></iron-ajax>
     `;
   }
 
@@ -295,11 +296,23 @@ class WiseShoppingCartContainer extends PolymerElement {
       currencyLabel: {
         type: String,
         value: 'USD'
+      },
+
+      googleMapsApiKey: {
+        type: String,
+        value: 'AIzaSyAuKg9jszEEgoGfUlIqmd4n9czbQsgcYRM'
       }
     };
   }
 
-  _generateRequestUrl(urlPath, params) {
+    _generateRequest(method, url) {
+        const ajax = this.$.ajax;
+        ajax.method = method;
+        ajax.url = url;
+        ajax.generateRequest();
+    }
+
+    _generateRequestUrl(urlPath, params) {
     let url = this.hostname + urlPath;
     if (params) {
         url = url + params;
@@ -336,8 +349,6 @@ class WiseShoppingCartContainer extends PolymerElement {
                 composed: true
             })
         );
-
-        //TODO
         const params = "?cartId=" + this.cartId;
         this._generateRequest('POST', this._generateRequestUrl('/order', params));
     }
@@ -351,13 +362,6 @@ class WiseShoppingCartContainer extends PolymerElement {
       this._generateRequest('PUT', this._generateRequestUrl('/api/cart/client/info', params));
     }
   }
-
-  _generateRequest(method, url) {
-        const ajax = this.$.ajax;
-        ajax.method = method;
-        ajax.url = url;
-        ajax.generateRequest();
-    }
 
   _onLastResponseChanged(event, response) {
     const cartData = response.value;
@@ -381,6 +385,32 @@ class WiseShoppingCartContainer extends PolymerElement {
         total += this.cart.configuration.delivery.courier.deliveryPrice;
     }
     return total;
+  }
+
+  _validateAndGeocodeAddress(event) {
+      this._validateAndSendClientAddressInfo(event);
+
+      const address = this.cart.client.address.street + ' ' + this.cart.client.address.building;
+      console.log("GEOCODING ", this.cart.client.address.street + ' ' + this.cart.client.address.building);
+      const params = '?key=' + this.googleMapsApiKey + '&address=' + address;
+      const geocodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json' + params;
+
+      const ajax = this.$.geocodingAjax;
+      ajax.url = geocodingUrl;
+      ajax.generateRequest();
+
+  }
+
+  _onGeocodingResponseChanged(event, response) {
+    console.log('_onGeocodingResponseChanged', event, response);
+    const results = response.value.results;
+
+    const areThereAnyResults = results.length > 0;
+    if(areThereAnyResults) {
+        const firstResult = results[0];
+        console.log('latlng is: ', firstResult.geometry.location);
+    }
+
   }
 
   _validateAndSendClientAddressInfo(event) {
