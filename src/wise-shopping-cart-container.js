@@ -201,11 +201,11 @@ class WiseShoppingCartContainer extends PolymerElement {
 
                                         <div hidden="[[!_isCourierDeliveryType(cart.deliveryType)]]">
                                             <paper-input id="street" pattern=".*\\S.*" label="Вулиця"
-                                                         value="[[cart.client.address.street]]" required
+                                                         value="{{cart.client.address.street}}" required
                                                          error-message="Заповніть, будь ласка, це поле"
                                                          on-blur="_validateAndGeocodeAddress"></paper-input>
                                             <paper-input id="building" pattern=".*\\S.*"
-                                                         label="Будинок" value="[[cart.client.address.building]]"
+                                                         label="Будинок" value="{{cart.client.address.building}}"
                                                          required error-message="Заповніть, будь ласка, це поле"
                                                          on-blur="_validateAndGeocodeAddress"></paper-input>
                                             <paper-input id="entrance" label="Під'їзд"
@@ -437,6 +437,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     // lng: "24.0293741"
     _sendGeocodeRequest() {
         const address = this.cart.client.address.street + ' ' + this.cart.client.address.building;
+        console.log('GEOCODING ADDRESS ' + address);
         const params = '?key=' + this.googleMapsApiKey + '&address=' + address;
         const geocodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json' + params;
         const ajax = this.$.geocodingAjax;
