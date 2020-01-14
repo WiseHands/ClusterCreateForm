@@ -185,7 +185,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                     <span slot="prefix">+380</span>
                                 </paper-input>
                                 <paper-input id="clientEmail" type="email" label="Email" value="[[cart.client.email]]" required
-                                             on-blur="_validateAndSend"></paper-input>
+                                             on-blur="_validateAndSendClientInfo"></paper-input>
                                 <paper-input id="clientComments" label="Коментар" value="[[cart.client.comments]]"
                                              on-blur="_validateAndSendClientInfo"></paper-input>
                             </paper-card>
@@ -233,7 +233,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                             </template>
                             <span class="error-span">[[errorMessage]]</span>
                             <div class="total-container">
-                                <h1>СУМА: [[_calculateTotal(cart.items)]] грн</h1>
+                                <h1>СУМА: [[_calculateTotal(cart)]] грн</h1>
                                 <paper-button disabled=[[!cart.items.length]] on-tap="_proceed">NEXT
                                 </paper-button>
                             </div>
@@ -245,6 +245,8 @@ class WiseShoppingCartContainer extends PolymerElement {
         <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
         <iron-ajax id="geocodingAjax" handle-as="json" on-last-response-changed="_onGeocodingResponseChanged"></iron-ajax>
         <iron-ajax id="courierDeliveryBoundariesAjax" handle-as="json" on-last-response-changed="_onCourierDeliveryBoundariesResponseChanged"></iron-ajax>
+        <iron-ajax id="makeOrderAjax" handle-as="json" on-last-response-changed="_onOrderResponseResponseChanged"></iron-ajax>
+
     `;
   }
 
@@ -351,10 +353,26 @@ class WiseShoppingCartContainer extends PolymerElement {
             })
         );
         const params = "?cartId=" + this.cartId;
-        this._generateRequest('POST', this._generateRequestUrl('/order', params));
+
+
+        const ajax = this.$.makeOrderAjax;
+        let url = '';
+        const urlPath = '/order';
+        if(this.hostname) {
+            url += this.hostname;
+        }
+        url += urlPath;
+        ajax.url = url + params;
+        ajax.method = 'POST';
+        ajax.generateRequest();
     }
 
   }
+
+    _onOrderResponseResponseChanged(event, detail) {
+        const response = detail.value;
+        console.log('_onOrderResponseResponseChanged', response);
+    }
 
   _validateAndSendClientInfo(event) {
     const targetElement = event.target;
@@ -377,8 +395,10 @@ class WiseShoppingCartContainer extends PolymerElement {
     this.set('cart', cartData ? cartData : {items: []});
   }
 
-  _calculateTotal(items) {
+  _calculateTotal(cart) {
     let total = 0;
+    let items = cart.items;
+    console.log("cart.items__", cart.items);
     items.forEach(item => {
       total += item.quantity * item.price;
     });
