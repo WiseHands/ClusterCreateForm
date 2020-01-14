@@ -425,7 +425,10 @@ class WiseShoppingCartContainer extends PolymerElement {
   }
 
   _onCourierDeliveryBoundariesResponseChanged(event, response) {
-      console.log('_onCourierDeliveryBoundariesResponseChanged', event, response);
+      console.log('_onCourierDeliveryBoundariesResponseChanged', event, response.value);
+      this.errorMessage = 'Вказана адреса знаходиться за межами доставки';
+      this.shadowRoot.querySelector('paper-input#street').invalid = true;
+      this.shadowRoot.querySelector('paper-input#building').invalid = true;
   }
 
   _onGeocodingResponseChanged(event, response) {
