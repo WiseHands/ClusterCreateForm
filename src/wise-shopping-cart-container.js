@@ -244,6 +244,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         </div>
         <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
         <iron-ajax id="geocodingAjax" handle-as="json" on-last-response-changed="_onGeocodingResponseChanged"></iron-ajax>
+        <iron-ajax id="courierDeliveryBoundariesAjax" handle-as="json" on-last-response-changed="_onCourierDeliveryBoundariesResponseChanged"></iron-ajax>
     `;
   }
 
@@ -388,17 +389,23 @@ class WiseShoppingCartContainer extends PolymerElement {
   }
 
   _validateAndGeocodeAddress(event) {
-      this._validateAndSendClientAddressInfo(event);
+    this._validateAndSendClientAddressInfo(event);
+      if (this.cart.client.address.street && this.cart.client.address.building){
+        const address = this.cart.client.address.street + ' ' + this.cart.client.address.building;
+        console.log("GEOCODING ", this.cart.client.address.street + ' ' + this.cart.client.address.building);
 
-      const address = this.cart.client.address.street + ' ' + this.cart.client.address.building;
-      console.log("GEOCODING ", this.cart.client.address.street + ' ' + this.cart.client.address.building);
-      const params = '?key=' + this.googleMapsApiKey + '&address=' + address;
-      const geocodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json' + params;
+        const params = '?key=' + this.googleMapsApiKey + '&address=' + address;
+        const geocodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json' + params;
+        const ajax = this.$.geocodingAjax;
+        ajax.url = geocodingUrl;
+        ajax.generateRequest();
+      }
 
-      const ajax = this.$.geocodingAjax;
-      ajax.url = geocodingUrl;
-      ajax.generateRequest();
 
+  }
+
+  _onCourierDeliveryBoundariesResponseChanged(event, response) {
+      console.log('_onCourierDeliveryBoundariesResponseChanged', event, response);
   }
 
   _onGeocodingResponseChanged(event, response) {
@@ -411,6 +418,18 @@ class WiseShoppingCartContainer extends PolymerElement {
         const params = '?lat=' + firstResult.geometry.location.lat + '&lng=' + firstResult.geometry.location.lng + "&cartId=" + this.cartId;
         console.log("firstResult.geometry.location.Lat + '&lng=' + firstResult.geometry.location.Lng", firstResult.geometry.location.lat, firstResult.geometry.location.lng);
         this._generateRequest('PUT', this._generateRequestUrl('/api/cart/address/info', params));
+
+
+        const ajax = this.$.courierDeliveryBoundariesAjax;
+        let url = '';
+        const urlPath = '/courier/check-delivery-boundaries';
+        if(this.hostname) {
+            url += this.hostname;
+        }
+        url += urlPath;
+        ajax.url = url + params;
+        ajax.method = 'PUT';
+        ajax.generateRequest();
     }
 
   }
@@ -419,7 +438,6 @@ class WiseShoppingCartContainer extends PolymerElement {
     const targetElement = event.target;
     if (targetElement.validate() && targetElement.value) {
       const params = '?' + targetElement.id + '=' + targetElement.value + "&cartId=" + this.cartId;
-          + "&cartId=" + this.cartId;
       this._generateRequest('PUT', this._generateRequestUrl('/api/cart/address/info', params));
     }
   }
