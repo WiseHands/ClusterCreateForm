@@ -422,16 +422,21 @@ class WiseShoppingCartContainer extends PolymerElement {
     _validateAndGeocodeAddress(event) {
         this._validateAndSendClientAddressInfo(event);
         if (this.cart.client.address.street && this.cart.client.address.building) {
+            console.log(`GEOCODING ${this.cart.client.address.street} ${this.cart.client.address.building}`);
             this._sendGeocodeRequest();
         }
 
 
     }
 
+
+    //lat: "49.84286050000001"
+    // lng: "24.0293741"
+
+    // lat: "49.84286050000001"
+    // lng: "24.0293741"
     _sendGeocodeRequest() {
         const address = this.cart.client.address.street + ' ' + this.cart.client.address.building;
-        console.log("GEOCODING ", this.cart.client.address.street + ' ' + this.cart.client.address.building);
-
         const params = '?key=' + this.googleMapsApiKey + '&address=' + address;
         const geocodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json' + params;
         const ajax = this.$.geocodingAjax;
@@ -439,7 +444,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         ajax.generateRequest();
     }
 
-    _onCourierDeliveryBoundariesResponseChanged(event, response) {
+    _onCourierDeliveryBoundariesResponseChanged (event, response) {
         console.log('_onCourierDeliveryBoundariesResponseChanged', event, response.value);
         const txt = 'межами доставки';
 
@@ -448,15 +453,16 @@ class WiseShoppingCartContainer extends PolymerElement {
         this.shadowRoot.querySelector('paper-input#building').invalid = true;
     }
 
-    _onGeocodingResponseChanged(event, response) {
-        console.log('_onGeocodingResponseChanged', event, response);
+    _onGeocodingResponseChanged (event, response) {
         const results = response.value.results;
 
         const areThereAnyResults = results.length > 0;
         if (areThereAnyResults) {
             const firstResult = results[0];
             const params = '?lat=' + firstResult.geometry.location.lat + '&lng=' + firstResult.geometry.location.lng + "&cartId=" + this.cartId;
-            console.log("firstResult.geometry.location.Lat + '&lng=' + firstResult.geometry.location.Lng", firstResult.geometry.location.lat, firstResult.geometry.location.lng);
+            console.log(`GEOCODING RESPONSE for ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat}:${firstResult.geometry.location.lng}`);
+
+            console.log(`SENDING GEOCODING RESPONSE TO OUR API ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat}:${firstResult.geometry.location.lng}`);
             this._generateRequest('PUT', this._generateRequestUrl('/api/cart/address/info', params));
         }
 
