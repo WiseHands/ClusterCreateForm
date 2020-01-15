@@ -117,7 +117,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                     padding-bottom: 1em;
                 }
 
-                #clientcomments {
+                #clientComments {
                     padding-bottom: 1em;
                 }
 
@@ -253,8 +253,6 @@ class WiseShoppingCartContainer extends PolymerElement {
             <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
             <iron-ajax id="geocodingAjax" handle-as="json"
                        on-last-response-changed="_onGeocodingResponseChanged"></iron-ajax>
-            <iron-ajax id="courierDeliveryBoundariesAjax" handle-as="json"
-                       on-last-response-changed="_onCourierDeliveryBoundariesResponseChanged"></iron-ajax>
             <iron-ajax id="makeOrderAjax" handle-as="json"
                        on-last-response-changed="_onOrderResponseChanged"></iron-ajax>
 
@@ -363,10 +361,9 @@ class WiseShoppingCartContainer extends PolymerElement {
         if (!isCourierDeliveryAndPointInRange) {
             console.log("isCourierDeliveryAndPointNotInRange", isCourierDeliveryAndPointInRange);
             this.errorMessage = 'Вказана адреса знаходиться за <a href="http://localhost:3334/selectaddress">межами доставки</a>';
-            this.shadowRoot.querySelector('paper-input#street').invalid = true;
-            this.shadowRoot.querySelector('paper-input#building').invalid = true;
         }
         if (isValid) {
+            this._geocodeIfAddressAvailable();
             const params = "?cartId=" + this.cartId;
 
             const ajax = this.$.makeOrderAjax;
@@ -424,16 +421,22 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _validateAndGeocodeAddress(event) {
         this._validateAndSendClientAddressInfo(event);
-        if (this.cart.client.address.street && this.cart.client.address.building) {
-            console.log(`GEOCODING ${this.cart.client.address.street} ${this.cart.client.address.building}`);
-            this._sendGeocodeRequest();
+        this._geocodeIfAddressAvailable();
+    }
+
+    _geocodeIfAddressAvailable(){
+        const address = this.cart.client.address;
+        if (address.street && address.building) {
+        console.log(`GEOCODING ${this.cart.client.address.street} ${this.cart.client.address.building}`);
+        this._sendGeocodeRequest();
         }
     }
 
     _sendGeocodeRequest() {
-        const address = this.cart.client.address.street + ' ' + this.cart.client.address.building;
+        const address = this.cart.client.address;
+        const addressParams = address.street + ' ' + address.building;
         console.log('GEOCODING ADDRESS ' + address);
-        const params = '?key=' + this.googleMapsApiKey + '&address=' + address;
+        const params = '?key=' + this.googleMapsApiKey + '&address=' + addressParams;
         const geocodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json' + params;
         const ajax = this.$.geocodingAjax;
         ajax.url = geocodingUrl;
@@ -446,7 +449,8 @@ class WiseShoppingCartContainer extends PolymerElement {
         const areThereAnyResults = results.length > 0;
         if (areThereAnyResults) {
             const firstResult = results[0];
-            const params = '?lat=' + firstResult.geometry.location.lat + '&lng=' + firstResult.geometry.location.lng + "&cartId=" + this.cartId;
+            const location = firstResult.geometry.location;
+            const params = `?lat=${location.lat}&lng=${location.lng}&cartId=${this.cartId}`;
             console.log(`GEOCODING RESPONSE for ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat},${firstResult.geometry.location.lng}`);
             console.log(`SENDING GEOCODING RESPONSE TO OUR API ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat},${firstResult.geometry.location.lng}`);
             this._generateRequest('PUT', this._generateRequestUrl('/api/cart/address/info', params));
