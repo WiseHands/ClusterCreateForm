@@ -41,7 +41,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 }
 
                 wise-shopping-cart {
-                    margin-right: .5em;
+                    margin-right: 1em;
                     flex: 1;
                 }
 
@@ -256,7 +256,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             <iron-ajax id="courierDeliveryBoundariesAjax" handle-as="json"
                        on-last-response-changed="_onCourierDeliveryBoundariesResponseChanged"></iron-ajax>
             <iron-ajax id="makeOrderAjax" handle-as="json"
-                       on-last-response-changed="_onOrderResponseResponseChanged"></iron-ajax>
+                       on-last-response-changed="_onOrderResponseChanged"></iron-ajax>
 
         `;
     }
@@ -355,16 +355,19 @@ class WiseShoppingCartContainer extends PolymerElement {
             }
         });
         const isValid = validInputs === requiredInputs.length;
-        if (isValid) {
-            this.dispatchEvent(new CustomEvent('proceed-with-shopping-cart',
-                {
-                    detail: this.cart,
-                    bubbles: true,
-                    composed: true
-                })
-            );
-            const params = "?cartId=" + this.cartId;
 
+        // if courier and not in range
+        const isCourierDeliveryAndPointInRange = this.cart.configuration.delivery.courier.isCourierActive && this.cart.client.address.isAddressInsideDeliveryBoundaries;
+        console.log("isAddressInsideDeliveryBoundaries", this.cart.client.address.isAddressInsideDeliveryBoundaries);
+        console.log("isCourierDeliveryAndPointNotInRange", isCourierDeliveryAndPointInRange);
+        if (!isCourierDeliveryAndPointInRange) {
+            console.log("isCourierDeliveryAndPointNotInRange", isCourierDeliveryAndPointInRange);
+            this.errorMessage = 'Вказана адреса знаходиться за <a href="http://localhost:3334/selectaddress">межами доставки</a>';
+            this.shadowRoot.querySelector('paper-input#street').invalid = true;
+            this.shadowRoot.querySelector('paper-input#building').invalid = true;
+        }
+        if (isValid) {
+            const params = "?cartId=" + this.cartId;
 
             const ajax = this.$.makeOrderAjax;
             let url = '';
@@ -380,20 +383,20 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     }
 
-    _onOrderResponseResponseChanged(event, detail) {
+    _onOrderResponseChanged (event, detail) {
         const response = detail.value;
-        console.log('_onOrderResponseResponseChanged', response);
-    }
-
-    _validateAndSendClientInfo(event) {
-        const targetElement = event.target;
-        if (targetElement.validate() && targetElement.value) {
-            const params = '?' + targetElement.id + '=' + targetElement.value + "&cartId=" + this.cartId;
-            this._generateRequest('PUT', this._generateRequestUrl('/api/cart/client/info', params));
+        if(response.status === 'ok') {
+            this.dispatchEvent(new CustomEvent('order-created',
+                {
+                    detail: response,
+                    bubbles: true,
+                    composed: true
+                })
+            );
         }
     }
 
-    _onLastResponseChanged(event, response) {
+    _onLastResponseChanged (event, response) {
         const cartData = response.value;
         console.log(cartData);
         this.dispatchEvent(new CustomEvent('shopping-cart-api-response',
@@ -406,7 +409,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         this.set('cart', cartData ? cartData : {items: []});
     }
 
-    _calculateTotal(cart) {
+    _calculateTotal (cart) {
         let total = 0;
         let items = cart.items;
         console.log("cart.items__", cart.items);
@@ -425,16 +428,8 @@ class WiseShoppingCartContainer extends PolymerElement {
             console.log(`GEOCODING ${this.cart.client.address.street} ${this.cart.client.address.building}`);
             this._sendGeocodeRequest();
         }
-
-
     }
 
-
-    //lat: "49.84286050000001"
-    // lng: "24.0293741"
-
-    // lat: "49.84286050000001"
-    // lng: "24.0293741"
     _sendGeocodeRequest() {
         const address = this.cart.client.address.street + ' ' + this.cart.client.address.building;
         console.log('GEOCODING ADDRESS ' + address);
@@ -445,15 +440,6 @@ class WiseShoppingCartContainer extends PolymerElement {
         ajax.generateRequest();
     }
 
-    _onCourierDeliveryBoundariesResponseChanged (event, response) {
-        console.log('_onCourierDeliveryBoundariesResponseChanged', event, response.value);
-        const txt = 'межами доставки';
-
-        this.errorMessage = 'Вказана адреса знаходиться за <a href="http://localhost:3334/selectaddress">межами доставки</a>';
-        this.shadowRoot.querySelector('paper-input#street').invalid = true;
-        this.shadowRoot.querySelector('paper-input#building').invalid = true;
-    }
-
     _onGeocodingResponseChanged (event, response) {
         const results = response.value.results;
 
@@ -461,12 +447,19 @@ class WiseShoppingCartContainer extends PolymerElement {
         if (areThereAnyResults) {
             const firstResult = results[0];
             const params = '?lat=' + firstResult.geometry.location.lat + '&lng=' + firstResult.geometry.location.lng + "&cartId=" + this.cartId;
-            console.log(`GEOCODING RESPONSE for ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat}:${firstResult.geometry.location.lng}`);
-
-            console.log(`SENDING GEOCODING RESPONSE TO OUR API ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat}:${firstResult.geometry.location.lng}`);
+            console.log(`GEOCODING RESPONSE for ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat},${firstResult.geometry.location.lng}`);
+            console.log(`SENDING GEOCODING RESPONSE TO OUR API ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat},${firstResult.geometry.location.lng}`);
             this._generateRequest('PUT', this._generateRequestUrl('/api/cart/address/info', params));
         }
 
+    }
+
+    _validateAndSendClientInfo(event) {
+        const targetElement = event.target;
+        if (targetElement.validate() && targetElement.value) {
+            const params = '?' + targetElement.id + '=' + targetElement.value + "&cartId=" + this.cartId;
+            this._generateRequest('PUT', this._generateRequestUrl('/api/cart/client/info', params));
+        }
     }
 
     _validateAndSendClientAddressInfo(event) {
