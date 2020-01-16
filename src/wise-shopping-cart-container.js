@@ -374,7 +374,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 try {
                     location = data.results[0].geometry.location;
                 } catch (error) {
-                    this.errorMessage = `Нажаль ми не змогли знайти Вашу адресу, виберіть її на <a href="http://localhost:3334/selectaddress">карті</a>`;
+                    this.errorMessage = `Нажаль ми не змогли знайти Вашу адресу, виберіть її на <a href="${this.hostname}/selectaddress">карті</a>`;
                     return;
                 }
                 const params = `?lat=${location.lat}&lng=${location.lng}&cartId=${cartId}`;
@@ -404,7 +404,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                         ajax.method = 'POST';
                         ajax.generateRequest();
                     } else {
-                        this.errorMessage = `Нажаль Ваша адреса не у зоні доставлення. Знайдіть адресу на <a href="http://localhost:3334/selectaddress">карті</a>`;
+                        this.errorMessage = `Нажаль Ваша адреса не у зоні доставлення. Знайдіть адресу на <a href="${this.hostname}/selectaddress">карті</a>`;
                     }
                 }.bind(this));
 
@@ -416,6 +416,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             this._makeOrderRequest();
         }
     }
+
 
     _makeOrderRequest(){
         const params = `?cartId=${this.cartId}`;
