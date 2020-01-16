@@ -251,8 +251,6 @@ class WiseShoppingCartContainer extends PolymerElement {
                 </div>
             </div>
             <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
-            <iron-ajax id="geocodingAjax" handle-as="json"
-                       on-last-response-changed="_onGeocodingResponseChanged"></iron-ajax>
             <iron-ajax id="makeOrderAjax" handle-as="json"
                        on-last-response-changed="_onOrderResponseChanged"></iron-ajax>
 
@@ -332,7 +330,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         return url;
     }
 
-    _proceed() {
+    async _proceed() {
         const deliveryType = this.$.deliveryType;
         const paymentType = this.$.paymentType;
         const requiredInputs = Array.from(this.shadowRoot.querySelectorAll('paper-input[required]')).filter(input => input.offsetWidth > 0 && input.offsetHeight > 0);
@@ -355,79 +353,31 @@ class WiseShoppingCartContainer extends PolymerElement {
         const isValid = validInputs === requiredInputs.length;
 
         const isCourierDelivery = this.cart.configuration.delivery.courier.isCourierActive;
-        if(isCourierDelivery) {
 
-            const address = this.cart.client.address;
-            const addressParams = address.street + ' ' + address.building;
-            console.log(`GEOCODING ADDRESS for order ${address}`);
-            const params = `?key=${this.googleMapsApiKey}&address=${addressParams}`;
-            const cartId = this.cartId;
-            const hostname = this.hostname;
-            const makeOrderAjax = this.$.makeOrderAjax;
-            fetch(`https://maps.googleapis.com/maps/api/geocode/json${params}`, {
-                method: 'GET',
-            }).then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                console.log(`get location from response ${data.results[0].geometry.location}`);
-                let location;
-                try {
-                    location = data.results[0].geometry.location;
-                } catch (error) {
-                    this.errorMessage = `Нажаль ми не змогли знайти Вашу адресу, виберіть її на <a href="${this.hostname}/selectaddress">карті</a>`;
-                    return;
-                }
-                const params = `?lat=${location.lat}&lng=${location.lng}&cartId=${cartId}`;
-                let url = '';
-                if (hostname) {
-                    url += hostname;
-                }
-                url += '/api/cart/address/info';
-                url += params;
-                fetch(url, {
-                    method: 'PUT',
-                }).then(function (response) {
-                    return response.json();
-                }).then(function (data) {
-                    console.log(`get isAddressInsideDeliveryBoundaries from response ${data.client.address.isAddressInsideDeliveryBoundaries}`);
-                    const isAddressInsideDeliveryBoundaries = data.client.address.isAddressInsideDeliveryBoundaries;
-                    if (isAddressInsideDeliveryBoundaries){
-                        const params = "?cartId=" + cartId;
-                        const ajax = makeOrderAjax;
-                        let url = '';
-                        const urlPath = '/order';
-                        if (hostname) {
-                            url += hostname;
-                        }
-                        url += urlPath;
-                        ajax.url = url + params;
-                        ajax.method = 'POST';
-                        ajax.generateRequest();
-                    } else {
-                        this.errorMessage = `Нажаль Ваша адреса не у зоні доставлення. Знайдіть адресу на <a href="${this.hostname}/selectaddress">карті</a>`;
-                    }
-                }.bind(this));
-
-            }.bind(this));
-        }
 
         if (isValid && !isCourierDelivery) {
             this._geocodeIfAddressAvailable();
             this._makeOrderRequest();
         }
+
+        if(isCourierDelivery) {
+
+            const address = this.cart.client.address;
+            let cart = await this._geocode(`${address.street} ${address.building}`);
+
+            const isAddressInsideDeliveryBoundaries = cart.client.address.isAddressInsideDeliveryBoundaries;
+            if (isAddressInsideDeliveryBoundaries){
+                this._makeOrderRequest();
+            } else {
+                this.errorMessage = `Нажаль Ваша адреса не у зоні доставки. Знайдіть адресу на <a href="${this.hostname}/selectaddress">карті</a>.`;
+            }
+        }
     }
 
 
     _makeOrderRequest(){
-        const params = `?cartId=${this.cartId}`;
         const ajax = this.$.makeOrderAjax;
-        let url = '';
-        const urlPath = '/order';
-        if (this.hostname) {
-            url += this.hostname;
-        }
-        url += urlPath;
-        ajax.url = url + params;
+        ajax.url = `${this.hostname}/order?cartId=${cart.uuid}`;
         ajax.method = 'POST';
         ajax.generateRequest();
     }
@@ -474,41 +424,45 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _validateAndGeocodeAddress(event) {
         this._validateAndSendClientAddressInfo(event);
-        this._geocodeIfAddressAvailable();
-    }
-
-    _geocodeIfAddressAvailable(){
         const address = this.cart.client.address;
         if (address.street && address.building) {
-        console.log(`GEOCODING ${this.cart.client.address.street} ${this.cart.client.address.building}`);
-        this._sendGeocodeRequest();
+            this._geocode();
         }
     }
 
-    _sendGeocodeRequest(){
-        const address = this.cart.client.address;
-        const addressParams = address.street + ' ' + address.building;
-        console.log('GEOCODING ADDRESS ',address);
-        const params = `?key=${this.googleMapsApiKey}&address=${addressParams}`;
-        const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json${params}`;
-        const ajax = this.$.geocodingAjax;
-        ajax.url = geocodingUrl;
-        ajax.generateRequest();
-    }
-
-    _onGeocodingResponseChanged (event, response) {
-        const results = response.value.results;
-
-        const areThereAnyResults = results.length > 0;
-        if (areThereAnyResults) {
+    async _geocode(){
+        let response = await this._sendGeocodeRequest();
+        try {
+            const results = response.results;
             const firstResult = results[0];
             const location = firstResult.geometry.location;
-            const params = `?lat=${location.lat}&lng=${location.lng}&cartId=${this.cartId}`;
-            console.log(`GEOCODING RESPONSE for ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat},${firstResult.geometry.location.lng}`);
-            console.log(`SENDING GEOCODING RESPONSE TO OUR API ${this.cart.client.address.street} ${this.cart.client.address.building} ${firstResult.geometry.location.lat},${firstResult.geometry.location.lng}`);
-            this._generateRequest('PUT', this._generateRequestUrl('/api/cart/address/info', params));
+            this.cart = await this.updateCartWithAddressLocation(location);
+            return this.cart;
+        } catch (e) {
+            this.errorMessage = `Нажаль ми не змогли знайти Вашу адресу, виберіть її на <a href="${this.hostname}/selectaddress">карті</a>`;
         }
+    }
 
+    async getGeocodeData(address) {
+        let url = `https://maps.googleapis.com/maps/api/geocode/json?key=${this.googleMapsApiKey}&address=${address}`;
+        let response = await fetch(url);
+        return await response.json();
+    }
+
+    async updateCartWithAddressLocation(location) {
+        const params = `?lat=${location.lat}&lng=${location.lng}&cartId=${this.cartId}`;
+        let url = this._generateRequestUrl('/api/cart/address/info', params);
+
+        let response = await fetch(url, {
+            method: 'PUT'
+        });
+        return await response.json();
+    }
+
+    async _sendGeocodeRequest(){
+        const cartAddress = this.cart.client.address;
+        const address = `${cartAddress.street} ${cartAddress.building}`;
+        return await this.getGeocodeData(address);
     }
 
     _validateAndSendClientInfo(event) {
