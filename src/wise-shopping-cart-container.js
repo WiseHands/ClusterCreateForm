@@ -410,16 +410,6 @@ class WiseShoppingCartContainer extends PolymerElement {
             }.bind(this));
         }
 
-        // // if courier and not in range
-        // const isCourierDeliveryAndPointInRange = this.cart.configuration.delivery.courier.isCourierActive && this.cart.client.address.isAddressInsideDeliveryBoundaries;
-        // console.log("isAddressInsideDeliveryBoundaries", this.cart.client.address.isAddressInsideDeliveryBoundaries);
-        // console.log("isCourierDeliveryAndPointNotInRange", isCourierDeliveryAndPointInRange);
-        // if (!isCourierDeliveryAndPointInRange) {
-        //     console.log("isCourierDeliveryAndPointNotInRange", isCourierDeliveryAndPointInRange);
-        //     this.errorMessage = 'Вказана адреса знаходиться за <a href="http://localhost:3334/selectaddress">межами доставки</a>';
-        // }
-
-
         if (isValid && !isCourierDelivery) {
             this._geocodeIfAddressAvailable();
             this._makeOrderRequest();
