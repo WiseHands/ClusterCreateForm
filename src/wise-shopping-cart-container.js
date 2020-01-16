@@ -261,28 +261,28 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     ready() {
         super.ready();
-        const params = "?cartId=" + this.cartId;
+        const params = `?cartId=${this.cartId}`;
         const url = this._generateRequestUrl('/api/cart', params);
         this._generateRequest('GET', url);
 
 
         this.addEventListener('increase-item-quantity', event => {
-                let params = '?uuid=' + event.detail + "&cartId=" + this.cartId;
-                this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', params));
+            let params = `?uuid=${event.detail}&cartId=${this.cartId}`;
+            this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', params));
             }
         );
 
 
         this.addEventListener('decrease-item-quantity', event => {
-                let params = '?uuid=' + event.detail + "&cartId=" + this.cartId;
-                this._generateRequest('DELETE', this._generateRequestUrl('/api/cart/decrease-quantity', params));
+            let params = `?uuid=${event.detail}&cartId=${this.cartId}`;
+            this._generateRequest('DELETE', this._generateRequestUrl('/api/cart/decrease-quantity', params));
             }
         );
 
 
         this.addEventListener('remove-item', event => {
-                let params = '?uuid=' + event.detail + "&cartId=" + this.cartId;
-                this._generateRequest('DELETE', this._generateRequestUrl('/api/cart', params));
+            let params = `?uuid=${event.detail}&cartId=${this.cartId}`;
+            this._generateRequest('DELETE', this._generateRequestUrl('/api/cart', params));
             }
         );
 
@@ -359,17 +359,17 @@ class WiseShoppingCartContainer extends PolymerElement {
 
             const address = this.cart.client.address;
             const addressParams = address.street + ' ' + address.building;
-            console.log('GEOCODING ADDRESS for order ' + address);
+            console.log(`GEOCODING ADDRESS for order ${address}`);
             const params = `?key=${this.googleMapsApiKey}&address=${addressParams}`;
             const cartId = this.cartId;
             const hostname = this.hostname;
             const makeOrderAjax = this.$.makeOrderAjax;
-            fetch('https://maps.googleapis.com/maps/api/geocode/json' + params, {
+            fetch(`https://maps.googleapis.com/maps/api/geocode/json${params}`, {
                 method: 'GET',
             }).then(function (response) {
                 return response.json();
             }).then(function (data) {
-                console.log('get location from response ', data.results[0].geometry.location);
+                console.log(`get location from response ${data.results[0].geometry.location}`);
                 let location;
                 try {
                     location = data.results[0].geometry.location;
@@ -389,7 +389,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 }).then(function (response) {
                     return response.json();
                 }).then(function (data) {
-                    console.log('get isAddressInsideDeliveryBoundaries from response ', data.client.address.isAddressInsideDeliveryBoundaries);
+                    console.log(`get isAddressInsideDeliveryBoundaries from response ${data.client.address.isAddressInsideDeliveryBoundaries}`);
                     const isAddressInsideDeliveryBoundaries = data.client.address.isAddressInsideDeliveryBoundaries;
                     if (isAddressInsideDeliveryBoundaries){
                         const params = "?cartId=" + cartId;
@@ -418,7 +418,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     }
 
     _makeOrderRequest(){
-        const params = "?cartId=" + this.cartId;
+        const params = `?cartId=${this.cartId}`;
         const ajax = this.$.makeOrderAjax;
         let url = '';
         const urlPath = '/order';
@@ -461,7 +461,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     _calculateTotal (cart) {
         let total = 0;
         let items = cart.items;
-        console.log("cart.items__", cart.items);
+        console.log(`cart.items__ ${cart.items}`);
         items.forEach(item => {
             total += item.quantity * item.price;
         });
@@ -489,7 +489,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         const addressParams = address.street + ' ' + address.building;
         console.log('GEOCODING ADDRESS ',address);
         const params = `?key=${this.googleMapsApiKey}&address=${addressParams}`;
-        const geocodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json' + params;
+        const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json${params}`;
         const ajax = this.$.geocodingAjax;
         ajax.url = geocodingUrl;
         ajax.generateRequest();
