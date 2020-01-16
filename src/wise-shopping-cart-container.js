@@ -354,35 +354,96 @@ class WiseShoppingCartContainer extends PolymerElement {
         });
         const isValid = validInputs === requiredInputs.length;
 
-        // if courier and not in range
-        const isCourierDeliveryAndPointInRange = this.cart.configuration.delivery.courier.isCourierActive && this.cart.client.address.isAddressInsideDeliveryBoundaries;
-        console.log("isAddressInsideDeliveryBoundaries", this.cart.client.address.isAddressInsideDeliveryBoundaries);
-        console.log("isCourierDeliveryAndPointNotInRange", isCourierDeliveryAndPointInRange);
-        if (!isCourierDeliveryAndPointInRange) {
-            console.log("isCourierDeliveryAndPointNotInRange", isCourierDeliveryAndPointInRange);
-            this.errorMessage = 'Вказана адреса знаходиться за <a href="http://localhost:3334/selectaddress">межами доставки</a>';
+
+        const isCourierDelivery = this.cart.configuration.delivery.courier.isCourierActive;
+        if(isCourierDelivery) {
+
+            const address = this.cart.client.address;
+            const addressParams = address.street + ' ' + address.building;
+            console.log('GEOCODING ADDRESS ' + address);
+            const params = '?key=' + this.googleMapsApiKey + '&address=' + addressParams;
+            const cartId = this.cartId;
+            const hostname = this.hostname;
+            const makeOrderAjax = this.$.makeOrderAjax;
+            fetch('https://maps.googleapis.com/maps/api/geocode/json' + params, {
+                method: 'GET',
+
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                let location;
+                try {
+                    location = data.results[0].geometry.location;
+                } catch (error) {
+                    this.errorMessage = 'Нажаль ми не змогли знайти Вашу адресу, виберіть її на ' +
+                        '<a href="http://localhost:3334/selectaddress">карті</a>';
+                    return;
+                }
+                const params = `?lat=${location.lat}&lng=${location.lng}&cartId=${cartId}`;
+                let url = '';
+                if (hostname) {
+                    url += hostname;
+                }
+                url += '/api/cart/address/info';
+                url += params;
+                fetch(url, {
+                    method: 'PUT',
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    const isAddressInsideDeliveryBoundaries = data.client.address.isAddressInsideDeliveryBoundaries;
+                    if (isAddressInsideDeliveryBoundaries){
+                        const params = "?cartId=" + cartId;
+                        const ajax = makeOrderAjax;
+                        let url = '';
+                        const urlPath = '/order';
+                        if (hostname) {
+                            url += hostname;
+                        }
+                        url += urlPath;
+                        ajax.url = url + params;
+                        ajax.method = 'POST';
+                        ajax.generateRequest();
+                    }
+                });
+
+            }.bind(this));
         }
-        if (isValid) {
+
+        // // if courier and not in range
+        // const isCourierDeliveryAndPointInRange = this.cart.configuration.delivery.courier.isCourierActive && this.cart.client.address.isAddressInsideDeliveryBoundaries;
+        // console.log("isAddressInsideDeliveryBoundaries", this.cart.client.address.isAddressInsideDeliveryBoundaries);
+        // console.log("isCourierDeliveryAndPointNotInRange", isCourierDeliveryAndPointInRange);
+        // if (!isCourierDeliveryAndPointInRange) {
+        //     console.log("isCourierDeliveryAndPointNotInRange", isCourierDeliveryAndPointInRange);
+        //     this.errorMessage = 'Вказана адреса знаходиться за <a href="http://localhost:3334/selectaddress">межами доставки</a>';
+        // }
+
+
+        if (isValid && !isCourierDelivery) {
             this._geocodeIfAddressAvailable();
-            const params = "?cartId=" + this.cartId;
-
-            const ajax = this.$.makeOrderAjax;
-            let url = '';
-            const urlPath = '/order';
-            if (this.hostname) {
-                url += this.hostname;
-            }
-            url += urlPath;
-            ajax.url = url + params;
-            ajax.method = 'POST';
-            ajax.generateRequest();
+            this._makeOrderRequest();
         }
-
     }
 
-    _onOrderResponseChanged (event, detail) {
+    _makeOrderRequest(){
+        const params = "?cartId=" + this.cartId;
+        const ajax = this.$.makeOrderAjax;
+        let url = '';
+        const urlPath = '/order';
+        if (this.hostname) {
+            url += this.hostname;
+        }
+        url += urlPath;
+        ajax.url = url + params;
+        ajax.method = 'POST';
+        ajax.generateRequest();
+    }
+
+    _onOrderResponseChanged (event, detail)
+    {
         const response = detail.value;
-        if(response.status === 'ok') {
+        if (response.status === 'ok') {
             this.dispatchEvent(new CustomEvent('order-created',
                 {
                     detail: response,
@@ -391,6 +452,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 })
             );
         }
+
     }
 
     _onLastResponseChanged (event, response) {
@@ -432,7 +494,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         }
     }
 
-    _sendGeocodeRequest() {
+    _sendGeocodeRequest(){
         const address = this.cart.client.address;
         const addressParams = address.street + ' ' + address.building;
         console.log('GEOCODING ADDRESS ' + address);
