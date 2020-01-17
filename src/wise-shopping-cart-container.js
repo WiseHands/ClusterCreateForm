@@ -377,15 +377,17 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _makeOrderRequest(){
         const ajax = this.$.makeOrderAjax;
-        ajax.url = `${this.hostname}/order?cartId=${cart.uuid}`;
+        ajax.url = `${this.hostname}/order?cartId=${this.cart.uuid}`;
         ajax.method = 'POST';
         ajax.generateRequest();
     }
 
     _onOrderResponseChanged (event, detail)
     {
+        console.log("_onOrderResponseChanged", detail);
         const response = detail.value;
         if (response.status === 'ok') {
+            this.cart = {items: []};
             this.dispatchEvent(new CustomEvent('order-created',
                 {
                     detail: response,
