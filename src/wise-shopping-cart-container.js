@@ -42,6 +42,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
                 wise-shopping-cart {
                     margin-right: 1em;
+                    margin-bottom: 1em;
                     flex: 1;
                 }
 
