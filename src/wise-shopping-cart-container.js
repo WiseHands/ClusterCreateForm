@@ -258,29 +258,48 @@ class WiseShoppingCartContainer extends PolymerElement {
         `;
     }
 
+    addCartIdParamIfAvailable(isFirst) {
+        let param = '';
+        if(!this.cartId) {
+            return param;
+        }
+
+        if(isFirst) {
+            param += '?'
+        } else {
+            param += '&'
+        }
+
+        if(this.cartId) {
+            param += `cartId=${this.cartId}`
+        }
+
+        return param;
+    }
+
     ready() {
         super.ready();
-        const params = `?cartId=${this.cartId}`;
+        const params = this.addCartIdParamIfAvailable(true);
         const url = this._generateRequestUrl('/api/cart', params);
         this._generateRequest('GET', url);
 
 
         this.addEventListener('increase-item-quantity', event => {
-            let params = `?uuid=${event.detail}&cartId=${this.cartId}`;
+            let params = `?uuid=${event.detail}${this.addCartIdParamIfAvailable(false)}`;
             this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', params));
             }
         );
 
 
         this.addEventListener('decrease-item-quantity', event => {
-            let params = `?uuid=${event.detail}&cartId=${this.cartId}`;
+            let params = `?uuid=${event.detail}${this.addCartIdParamIfAvailable(false)}`;
             this._generateRequest('DELETE', this._generateRequestUrl('/api/cart/decrease-quantity', params));
             }
         );
 
 
         this.addEventListener('remove-item', event => {
-            let params = `?uuid=${event.detail}&cartId=${this.cartId}`;
+            let params = `?uuid=${event.detail}${this.addCartIdParamIfAvailable(false)}`;
             this._generateRequest('DELETE', this._generateRequestUrl('/api/cart', params));
             }
         );
@@ -370,7 +389,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             let cart = await this._geocode(`${address.street} ${address.building}`);
 
             const isAddressInsideDeliveryBoundaries = cart.client.address.isAddressInsideDeliveryBoundaries;
-            if (isAddressInsideDeliveryBoundaries){
+            if (isValid && isAddressInsideDeliveryBoundaries){
                 this._makeOrderRequest();
             } else {
                 this.errorMessage = `Нажаль Ваша адреса не у зоні доставки. Знайдіть адресу на <a href="${this.hostname}/selectaddress">карті</a>.`;
@@ -381,7 +400,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _makeOrderRequest(){
         const ajax = this.$.makeOrderAjax;
-        ajax.url = `${this.hostname}/order?cartId=${this.cart.uuid}`;
+        ajax.url = `${this.hostname}/order${this.addCartIdParamIfAvailable(true)}`;
         ajax.method = 'POST';
         ajax.generateRequest();
     }
@@ -456,7 +475,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     }
 
     async updateCartWithAddressLocation(location) {
-        const params = `?lat=${location.lat}&lng=${location.lng}&cartId=${this.cartId}`;
+        const params = `?lat=${location.lat}&lng=${location.lng}${this.addCartIdParamIfAvailable(false)}`;
         let url = this._generateRequestUrl('/api/cart/address/info', params);
 
         let response = await fetch(url, {
@@ -474,7 +493,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     _validateAndSendClientInfo(event) {
         const targetElement = event.target;
         if (targetElement.validate() && targetElement.value) {
-            const params = `?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`;
+            const params = `?${targetElement.id}=${targetElement.value}${this.addCartIdParamIfAvailable(false)}`;
             this._generateRequest('PUT', this._generateRequestUrl('/api/cart/client/info', params));
         }
     }
@@ -482,7 +501,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     _validateAndSendClientAddressInfo(event) {
         const targetElement = event.target;
         if (targetElement.validate() && targetElement.value) {
-            const params = `?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`;
+            const params = `?${targetElement.id}=${targetElement.value}${this.addCartIdParamIfAvailable(false)}`;
             this._generateRequest('PUT', this._generateRequestUrl('/api/cart/address/info', params));
         }
     }
@@ -490,18 +509,18 @@ class WiseShoppingCartContainer extends PolymerElement {
     _validateAndSendClientPostInfo(event) {
         const targetElement = event.target;
         if (targetElement.validate() && targetElement.value) {
-            const params = `?${targetElement.id}=${targetElement.value}&cartId=${this.cartId}`;
+            const params = `?${targetElement.id}=${targetElement.value}${this.addCartIdParamIfAvailable(false)}`;
             this._generateRequest('PUT', this._generateRequestUrl('/api/cart/post/info', params));
         }
     }
 
     _onDeliveryTypeChange(event, data) {
-        const params = `?deliverytype=${data.value}&cartId=${this.cartId}`;
+        const params = `?deliverytype=${data.value}${this.addCartIdParamIfAvailable(false)}`;
         this._generateRequest('PUT', this._generateRequestUrl('/api/cart/delivery', params));
     }
 
     _onPaymentTypeChange(event, data) {
-        const params = `?paymenttype=${data.value}&cartId=${this.cartId}`;;
+        const params = `?paymenttype=${data.value}${this.addCartIdParamIfAvailable(false)}`;;
         this._generateRequest('PUT', this._generateRequestUrl('/api/cart/payment', params));
     }
 
