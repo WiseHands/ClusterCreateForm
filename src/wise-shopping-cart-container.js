@@ -143,7 +143,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                             <wise-shopping-cart currency-label="[[currencyLabel]]"
                                                 cart-items="[[cart.items]]"></wise-shopping-cart>
                         </div>
-                        <div class="order-details-container">
+                        <div hidden="[[!areThereItems(cart.items)]]" class="order-details-container">
                             <div class="order-details">
 
                                 <paper-card>
@@ -316,6 +316,9 @@ class WiseShoppingCartContainer extends PolymerElement {
         };
     }
 
+    areThereItems(items){
+        return items.length !== 0;
+    }
     _generateRequest(method, url) {
         const ajax = this.$.ajax;
         ajax.method = method;
