@@ -375,15 +375,14 @@ class WiseShoppingCartContainer extends PolymerElement {
         });
         const isValid = validInputs === requiredInputs.length;
 
-        const isCourierDelivery = this.cart.configuration.delivery.courier.isCourierActive;
+        const isCourierDeliverySelected = this.cart.deliveryType === 'COURIER';
 
 
-        if (isValid && !isCourierDelivery) {
-            this._geocodeIfAddressAvailable();
+        if (isValid && !isCourierDeliverySelected) {
             this._makeOrderRequest();
         }
 
-        if(isCourierDelivery) {
+        if(isCourierDeliverySelected) {
 
             const address = this.cart.client.address;
             let cart = await this._geocode(`${address.street} ${address.building}`);
