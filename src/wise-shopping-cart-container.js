@@ -152,15 +152,15 @@ class WiseShoppingCartContainer extends PolymerElement {
                                                        on-selected-changed="_onDeliveryTypeChange">
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.courier.isCourierActive]]">
-                                            <paper-radio-button name="COURIER">Кур'єр</paper-radio-button>
+                                            <paper-radio-button name="COURIER">[[cart.configuration.delivery.courier.label]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.postDepartment.isPostDepartmentActive]]">
-                                            <paper-radio-button name="POSTSERVICE">Нова Пошта</paper-radio-button>
+                                            <paper-radio-button name="POSTSERVICE">[[cart.configuration.delivery.postDepartment.label]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.selfTake.isSelfTakeActive]]">
-                                            <paper-radio-button name="SELFTAKE">Самовивіз</paper-radio-button>
+                                            <paper-radio-button name="SELFTAKE">[[cart.configuration.delivery.selfTake.label]]</paper-radio-button>
                                         </template>
                                     </paper-radio-group>
                                 </paper-card>
@@ -170,11 +170,11 @@ class WiseShoppingCartContainer extends PolymerElement {
                                     <paper-radio-group id="paymentType" selected="[[cart.paymentType]]"
                                                        on-selected-changed="_onPaymentTypeChange">
                                         <template is="dom-if" if="[[cart.configuration.payment.cash.isActive]]">
-                                            <paper-radio-button name="CREDITCARD">Онлайн</paper-radio-button>
+                                            <paper-radio-button name="CREDITCARD">[[cart.configuration.payment.creditCard.label]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.payment.creditCard.isActivePayByCash]]">
-                                            <paper-radio-button name="CASHONDELIVERY">Готівкою</paper-radio-button>
+                                            <paper-radio-button name="CASHONDELIVERY">[[cart.configuration.payment.cash.label]]</paper-radio-button>
                                         </template>
                                     </paper-radio-group>
                                 </paper-card>
@@ -258,6 +258,36 @@ class WiseShoppingCartContainer extends PolymerElement {
         `;
     }
 
+    static get properties() {
+        return {
+            cart: {
+                type: Object,
+                value: {
+                    items: []
+                }
+            },
+            cartId: {
+                type: String,
+                value: ''
+            },
+            hostname: {
+                type: String,
+                value: ''
+            },
+            errorMessage: String,
+
+            currencyLabel: {
+                type: String,
+                value: 'USD'
+            },
+
+            googleMapsApiKey: {
+                type: String,
+                value: 'AIzaSyAuKg9jszEEgoGfUlIqmd4n9czbQsgcYRM'
+            }
+        };
+    }
+
     addCartIdParamIfAvailable(isFirst) {
         let param = '';
         if(!this.cartId) {
@@ -273,6 +303,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         if(this.cartId) {
             param += `cartId=${this.cartId}`
         }
+        console.log(`addCartIdParamIfAvailable ${param}`)
 
         return param;
     }
@@ -306,34 +337,6 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     }
 
-    static get properties() {
-        return {
-            cart: {
-                type: Object,
-                value: {
-                    items: []
-                }
-            },
-            cartId: {
-                type: String
-            },
-            hostname: {
-                type: String,
-                value: ''
-            },
-            errorMessage: String,
-
-            currencyLabel: {
-                type: String,
-                value: 'USD'
-            },
-
-            googleMapsApiKey: {
-                type: String,
-                value: 'AIzaSyAuKg9jszEEgoGfUlIqmd4n9czbQsgcYRM'
-            }
-        };
-    }
 
     areThereItems(items){
         return items.length !== 0;
