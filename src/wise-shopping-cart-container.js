@@ -152,7 +152,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                                        on-selected-changed="_onDeliveryTypeChange">
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.courier.isCourierActive]]">
-                                            <paper-radio-button name="COURIER">[[cart.configuration.delivery.courier.label]]</paper-radio-button>
+                                            <paper-radio-button name="COURIER" disabled="[[_computeIsMinCourierDeliveryPriceIsMoreOrEqualThanTotal(cart.configuration.delivery.courier, total)]]">[[cart.configuration.delivery.courier.label]] [[_computeCourierLabel(cart.configuration.delivery.courier)]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.postDepartment.isPostDepartmentActive]]">
@@ -242,7 +242,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                 </template>
                                 <span class="error-span" inner-h-t-m-l="[[errorMessage]]"></span>
                                 <div class="total-container">
-                                    <h1>СУМА: [[_calculateTotal(cart)]] грн</h1>
+                                    <h1>СУМА: [[total]] [[currencyLabel]]</h1>
                                     <paper-button disabled=[[!cart.items.length]] on-tap="_proceed">NEXT
                                     </paper-button>
                                 </div>
@@ -276,10 +276,17 @@ class WiseShoppingCartContainer extends PolymerElement {
             },
             errorMessage: String,
 
+            total: {
+                type: Number,
+                computed: '_calculateTotal(cart)'
+            },
+
             currencyLabel: {
                 type: String,
                 value: 'USD'
             },
+
+            courierLabel: String,
 
             googleMapsApiKey: {
                 type: String,
@@ -288,6 +295,14 @@ class WiseShoppingCartContainer extends PolymerElement {
         };
     }
 
+    _computeCourierLabel(courierInfo){
+        const label = ` ( + ${courierInfo.deliveryPrice} ${this.currencyLabel})`;
+        return label;
+    }
+    _computeIsMinCourierDeliveryPriceIsMoreOrEqualThanTotal(courierInfo, total){
+        return courierInfo.deliveryPrice >= total;
+    }
+    // cart.configuration.delivery.courier.label
     addCartIdParamIfAvailable(isFirst) {
         let param = '';
         if(!this.cartId) {
@@ -303,7 +318,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         if(this.cartId) {
             param += `cartId=${this.cartId}`
         }
-        console.log(`addCartIdParamIfAvailable ${param}`)
+        console.log(`addCartIdParamIfAvailable ${param}`);
 
         return param;
     }
