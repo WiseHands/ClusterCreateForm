@@ -296,6 +296,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     }
 
     _computeCourierLabel(courierInfo){
+
         const label = ` ( + ${courierInfo.deliveryPrice} ${this.currencyLabel})`;
         return label;
     }
@@ -329,20 +330,17 @@ class WiseShoppingCartContainer extends PolymerElement {
         const url = this._generateRequestUrl('/api/cart', params);
         this._generateRequest('GET', url);
 
-
         this.addEventListener('increase-item-quantity', event => {
             let params = `?uuid=${event.detail}${this.addCartIdParamIfAvailable(false)}`;
             this._generateRequest('POST', this._generateRequestUrl('/api/cart/increase-quantity', params));
             }
         );
 
-
         this.addEventListener('decrease-item-quantity', event => {
             let params = `?uuid=${event.detail}${this.addCartIdParamIfAvailable(false)}`;
             this._generateRequest('DELETE', this._generateRequestUrl('/api/cart/decrease-quantity', params));
             }
         );
-
 
         this.addEventListener('remove-item', event => {
             let params = `?uuid=${event.detail}${this.addCartIdParamIfAvailable(false)}`;
@@ -351,7 +349,6 @@ class WiseShoppingCartContainer extends PolymerElement {
         );
 
     }
-
 
     areThereItems(items){
         return items.length !== 0;
@@ -459,6 +456,10 @@ class WiseShoppingCartContainer extends PolymerElement {
             total += item.quantity * item.price;
         });
         if (this.cart.deliveryType === 'COURIER') {
+            const freeDelivery = this.cart.configuration.delivery.courier.minimumPaymentForFreeDelivery;
+            if (total >= freeDelivery) {
+                return total;
+            }
             total += this.cart.configuration.delivery.courier.deliveryPrice;
         }
         return total;
