@@ -296,8 +296,11 @@ class WiseShoppingCartContainer extends PolymerElement {
     }
 
     _computeCourierLabel(courierInfo){
+        let label = '';
+        if(this.total < courierInfo.minimumPaymentForFreeDelivery) {
+            label = ` ( + ${courierInfo.deliveryPrice} ${this.currencyLabel})`
+        }
 
-        const label = ` ( + ${courierInfo.deliveryPrice} ${this.currencyLabel})`;
         return label;
     }
     _computeIsMinCourierDeliveryPriceIsMoreOrEqualThanTotal(courierInfo, total){
