@@ -152,7 +152,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                                        on-selected-changed="_onDeliveryTypeChange">
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.courier.isCourierActive]]">
-                                            <paper-radio-button name="COURIER" disabled="[[_computeIsMinCourierDeliveryPriceIsMoreOrEqualThanTotal(cart.configuration.delivery.courier, total)]]">[[cart.configuration.delivery.courier.label]] [[_computeCourierLabel(cart.configuration.delivery.courier)]]</paper-radio-button>
+                                            <paper-radio-button name="COURIER">[[cart.configuration.delivery.courier.label]] [[_computeCourierLabel(cart.configuration.delivery.courier)]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.postDepartment.isPostDepartmentActive]]">
@@ -303,10 +303,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
         return label;
     }
-    _computeIsMinCourierDeliveryPriceIsMoreOrEqualThanTotal(courierInfo, total){
-        return courierInfo.deliveryPrice >= total;
-    }
-    // cart.configuration.delivery.courier.label
+
     addCartIdParamIfAvailable(isFirst) {
         let param = '';
         if(!this.cartId) {
