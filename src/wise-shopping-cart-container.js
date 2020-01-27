@@ -381,6 +381,11 @@ class WiseShoppingCartContainer extends PolymerElement {
             this.set('errorMessage', 'Вкажіть, будь ласка, тип оплати');
             return;
         }
+        if (this.total <= this.cart.configuration.payment.minimumPaymentForOrder){
+            const message = `Мінімальна сума замовлення становить ${this.cart.configuration.payment.minimumPaymentForOrder} ${this.currencyLabel}`;
+            this.set('errorMessage', message);
+            return;
+        }
         this.set('errorMessage', '');
 
         requiredInputs.forEach(input => {
