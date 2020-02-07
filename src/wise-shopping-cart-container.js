@@ -170,7 +170,9 @@ class WiseShoppingCartContainer extends PolymerElement {
                                     <paper-radio-group id="paymentType" selected="[[cart.paymentType]]"
                                                        on-selected-changed="_onPaymentTypeChange">
                                         <template is="dom-if" if="[[cart.configuration.payment.cash.isActive]]">
-                                            <paper-radio-button name="CREDITCARD">[[cart.configuration.payment.creditCard.label]]</paper-radio-button>
+                                            <paper-radio-button name="CREDITCARD" title="Платіжна система liqpay бере комісію за опрацювання оплати, ось чому ви бачите додану вартість - це комісія платіжної системи">
+                                                [[_computeLabel(cart.configuration.payment.creditCard)]]
+                                            </paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.payment.creditCard.isActivePayByCash]]">
@@ -293,6 +295,10 @@ class WiseShoppingCartContainer extends PolymerElement {
                 value: 'AIzaSyAuKg9jszEEgoGfUlIqmd4n9czbQsgcYRM'
             }
         };
+    }
+
+    _computeLabel(paymentInfo) {
+        return `${paymentInfo.label} (+${paymentInfo.paymentComission * 100} %)`
     }
 
     _computeCourierLabel(courierInfo){
@@ -471,7 +477,11 @@ class WiseShoppingCartContainer extends PolymerElement {
             }
             total += this.cart.configuration.delivery.courier.deliveryPrice;
         }
-        return total;
+
+        if(this.cart.paymentType === 'CREDITCARD') {
+            total += total * this.cart.configuration.payment.creditCard.paymentComission;
+        }
+        return +(total.toFixed(2));
     }
 
     _validateAndGeocodeAddress(event) {
