@@ -484,7 +484,11 @@ class WiseShoppingCartContainer extends PolymerElement {
         if(this.cart.paymentType === 'CREDITCARD' && this.cart.configuration.payment.creditCard.clientPaysProcessingCommission) {
             total += total * this.cart.configuration.payment.creditCard.paymentComission;
         }
-        return +(total.toFixed(2));
+        return this.roundToTwo(total);
+    }
+
+    roundToTwo(num) {
+        return +(Math.round(num + "e+2")  + "e-2");
     }
 
     _validateAndGeocodeAddress(event) {
