@@ -200,6 +200,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                         <span slot="prefix">+380</span>
                                     </paper-input>
                                     <paper-input id="clientEmail" type="email" label="Email"
+                                                 error-message="Заповніть, будь ласка, це поле"
                                                  value="[[cart.client.email]]" required
                                                  on-blur="_validateAndSendClientInfo"></paper-input>
                                     <paper-input id="clientComments" label="Коментар" value="[[cart.client.comments]]"
@@ -305,6 +306,11 @@ class WiseShoppingCartContainer extends PolymerElement {
             },
 
             courierLabel: String,
+
+            isMakeOrderRequestRunning: {
+                type: Boolean,
+                value: false
+            },
 
             googleMapsApiKey: {
                 type: String,
@@ -449,14 +455,19 @@ class WiseShoppingCartContainer extends PolymerElement {
     }
 
     _makeOrderRequest(){
+        if(this.isMakeOrderRequestRunning) return;
+
         const ajax = this.$.makeOrderAjax;
         ajax.url = `${this.hostname}/order${this.addCartIdParamIfAvailable(true)}`;
         ajax.method = 'POST';
+        this.isMakeOrderRequestRunning = true;
         ajax.generateRequest();
     }
 
     _onOrderResponseChanged (event, detail)
     {
+        console.log('order response', event, detail);
+        this.isMakeOrderRequestRunning = false;
         this.cart = {items: []};
         this.dispatchEvent(new CustomEvent('order-created',
             {
