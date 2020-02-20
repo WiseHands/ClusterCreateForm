@@ -5,11 +5,13 @@ import '@polymer/paper-radio-button/paper-radio-button.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/iron-ajax/iron-ajax.js';
+import '@polymer/paper-spinner/paper-spinner.js';
 
 class WiseShoppingCartContainer extends PolymerElement {
     static get template() {
         // language=HTML
         return html`
+            <paper-spinner active></paper-spinner>
             <style>
                 :host {
                     display: block;
