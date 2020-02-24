@@ -477,12 +477,23 @@ class WiseShoppingCartContainer extends PolymerElement {
         console.log('order response', event, detail);
         this.isMakeOrderRequestRunning = false;
         this.cart = {items: []};
-        this.dispatchEvent(new CustomEvent('order-created',
-            {
-                bubbles: true,
-                composed: true
-            })
-        );
+
+        if(event.detail.value) {
+                this.dispatchEvent(new CustomEvent('order-created',
+                    {
+                        bubbles: true,
+                        composed: true
+                    })
+                );
+        } else {
+                this.dispatchEvent(new CustomEvent('order-processing-error',
+                    {
+                        bubbles: true,
+                        composed: true
+                    })
+                );
+        }
+
     }
 
     _onLastResponseChanged (event, response) {
