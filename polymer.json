@@ -2,7 +2,8 @@
   "entrypoint": "src/index.html",
   "shell": "src/wise-shopping-cart-container.js",
   "sources": [
-    "package.json"
+    "package.json",
+    "images/**/*"
   ],
   "extraDependencies": [
     "node_modules/@webcomponents/webcomponentsjs/*.js",
