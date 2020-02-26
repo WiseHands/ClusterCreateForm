@@ -49,6 +49,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
                 .shopping-cart-container {
                     flex: 1;
+                    width: 65%;
                 }
 
                 .order-details-container {
