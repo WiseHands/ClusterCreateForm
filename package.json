@@ -1,10 +1,10 @@
 {
-  "name": "wise-shopping-cart-container",
+  "name": "cluster-create-form",
   "version": "0.0.10",
-  "description": "container component for shopping cart",
+  "description": "container component",
   "author": "WiseHands Team",
   "repository": "WiseHands/ShoppingCartContainer",
-  "main": "src/wise-shopping-cart-container.js",
+  "main": "src/cluster-create-form.js",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "@polymer/app-layout": "^3.1.0",
@@ -13,17 +13,20 @@
     "@polymer/iron-image": "^3.0.2",
     "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-card": "^3.0.1",
+    "@polymer/paper-checkbox": "^3.1.0",
+    "@polymer/paper-dropdown-menu": "^3.1.0",
     "@polymer/paper-icon-button": "^3.0.2",
     "@polymer/paper-input": "^3.2.0",
+    "@polymer/paper-item": "^3.0.1",
+    "@polymer/paper-listbox": "^3.0.1",
     "@polymer/paper-radio-group": "^3.0.1",
     "@polymer/paper-spinner": "^3.0.2",
-    "@polymer/polymer": "^3.0.0",
-    "wise-shopping-cart": "github:WiseHands/GenericShoppingCart"
+    "@polymer/polymer": "^3.0.0"
   },
   "devDependencies": {
     "@polymer/iron-demo-helpers": "^3.1.0",
     "@polymer/test-fixture": "^4.0.2",
-    "@webcomponents/webcomponentsjs": "^2.4.1",
+    "@webcomponents/webcomponentsjs": "^2.4.2",
     "chai": "^4.2.0",
     "mocha": "^6.1.4",
     "wct-mocha": "^1.0.1"
