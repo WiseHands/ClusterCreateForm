@@ -37,6 +37,35 @@
         }
       ],
       "instanceType": "m5.large"
+    },
+    "clusterComponents": {
+      "type": [
+        {
+          "id": "ingresscontroller",
+          "name": "Ingress Controller"
+        },
+        {
+          "id": "kubernetesdashboard",
+          "name": "Kubernetes Dashboard"
+        },
+        {
+          "id": "loggingwithelk",
+          "name": "Logging with ELK"
+        },
+        {
+          "id": "prometheus-grafana",
+          "name": "Monitoring: Prometheus & Grafana"
+        },
+        {
+          "id": "argocs",
+          "name": "ArgoCD"
+        },
+        {
+          "id": "letsencrypt",
+          "name": "Cert-Manager LetsEncrypt"
+        }
+      ],
+      "instanceType": "m5.large"
     }
   },
   "envs": [

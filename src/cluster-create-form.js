@@ -207,7 +207,7 @@ class ClusterCreateForm extends PolymerElement {
   <div class="border"></div>
 
   <label id="provisioner">Provisioner</label>
-  <paper-radio-group selected="minikube" aria-labelledby="provisioner">
+  <paper-radio-group aria-labelledby="provisioner">
     <template is="dom-repeat" items="[[configuration.cluster.provisioner.type]]">
       <paper-radio-button name="[[item.id]]">[[item.name]]</paper-radio-button>
     </template>
@@ -224,13 +224,9 @@ class ClusterCreateForm extends PolymerElement {
   <div class="border"></div>
   <label id="cloud">Cluster Components</label>
   <div class="checkbox-container">
-    <paper-checkbox checked>Ingress Controller</paper-checkbox>
-
-    <paper-checkbox checked>Kubernetes Dashboard</paper-checkbox>
-    <paper-checkbox checked>Logging with ELK</paper-checkbox>
-    <paper-checkbox>Monitoring: Prometheus & Grafana</paper-checkbox>
-    <paper-checkbox checked>ArgoCD</paper-checkbox>
-    <paper-checkbox checked>Cert-Manager LetsEncrypt</paper-checkbox>
+    <template is="dom-repeat" items="[[configuration.cluster.clusterComponents.type]]">
+      <paper-checkbox name="[[item.id]]">[[item.name]]</paper-radio-button>
+    </template>
   </div>
   <div class="card-content">
     <a href="url">... more components</a>
