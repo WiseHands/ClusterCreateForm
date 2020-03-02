@@ -196,19 +196,23 @@ class ClusterCreateForm extends PolymerElement {
     </paper-radio-group>
 
   <paper-dropdown-menu label="Region">
+
     <paper-listbox slot="dropdown-content" class="dropdown-content">
       <paper-item>eu-central-1</paper-item>
       <paper-item>eu-central-2</paper-item>
       <paper-item>eu-central-3</paper-item>
     </paper-listbox>
+
   </paper-dropdown-menu>
   <div class="border"></div>
+
   <label id="provisioner">Provisioner</label>
   <paper-radio-group selected="minikube" aria-labelledby="provisioner">
-    <paper-radio-button name="minikube">Minikube</paper-radio-button>
-    <paper-radio-button name="eks">EKS</paper-radio-button>
-    <paper-radio-button name="clusterApi">ClusterApi</paper-radio-button>
+    <template is="dom-repeat" items="[[configuration.cluster.provisioner.type]]">
+      <paper-radio-button name="[[item.id]]">[[item.name]]</paper-radio-button>
+    </template>
   </paper-radio-group>
+
   <paper-dropdown-menu label="Instance Type">
     <paper-listbox slot="dropdown-content" class="dropdown-content">
       <paper-item>m5.large</paper-item>
@@ -216,6 +220,7 @@ class ClusterCreateForm extends PolymerElement {
       <paper-item>m5.large</paper-item>
     </paper-listbox>
   </paper-dropdown-menu>
+
   <div class="border"></div>
   <label id="cloud">Cluster Components</label>
   <div class="checkbox-container">

@@ -22,7 +22,20 @@
       "domain": "shalb.net"
     },
     "provisioner": {
-      "type": "minikube",
+      "type": [
+        {
+          "id": "minikube",
+          "name": "Minikube"
+        },
+        {
+          "id": "eks",
+          "name": "EKS"
+        },
+        {
+          "id": "clusterapi",
+          "name": "ClusterApi"
+        }
+      ],
       "instanceType": "m5.large"
     }
   },
