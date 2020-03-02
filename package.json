@@ -3,7 +3,7 @@
   "version": "0.0.10",
   "description": "container component",
   "author": "WiseHands Team",
-  "repository": "WiseHands/ShoppingCartContainer",
+  "repository": "WiseHands/ClusterCreateForm",
   "main": "src/cluster-create-form.js",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {

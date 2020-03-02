@@ -24,13 +24,6 @@ class ClusterCreateForm extends PolymerElement {
                     display: block;
                 }
 
-                .order-details {
-                }
-
-                .cart {
-                    display: flex;
-                }
-
                 paper-radio-group {
                     display: flex;
                     flex-direction: row;
@@ -40,26 +33,6 @@ class ClusterCreateForm extends PolymerElement {
 
                 h3 {
                     padding: 0 .5em;
-                }
-
-                wise-shopping-cart {
-                    margin-right: 1em;
-                    margin-bottom: 1em;
-                    flex: 1;
-                }
-
-                .shopping-cart-container {
-                    flex: 1;
-                    width: 65%;
-                }
-
-                .order-details-container {
-                    width: 35%;
-                }
-
-                .order-details {
-                    display: flex;
-                    flex-direction: column;
                 }
 
                 paper-card {
@@ -75,10 +48,6 @@ class ClusterCreateForm extends PolymerElement {
                 .error-span {
                     color: red;
                     min-height: 1.2em;
-                }
-                
-                .info-span{
-                    padding-left: 15.5px;
                 }
 
                 paper-input, paper-dropdown-menu {
@@ -149,27 +118,6 @@ class ClusterCreateForm extends PolymerElement {
                     display: none;
                 }
 
-                .total-container {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-end;
-                }
-                .total-container h1, h3{
-                    margin: 5px 0;
-                }
-
-                .order-details :nth-last-child(2) h3 {
-                    margin-bottom: 0;
-                }
-
-                .department-number {
-                    padding-bottom: 1em;
-                }
-
-                #clientComments {
-                    padding-bottom: 1em;
-                }
-
                 @media (max-width: 1024px) {
                     .cart {
                         flex-direction: column;
@@ -189,7 +137,7 @@ class ClusterCreateForm extends PolymerElement {
   <paper-input always-float-label label="Name"></paper-input>
   <label id="cloud">Cloud</label>
 
-    <paper-radio-group aria-labelledby="cloud">
+    <paper-radio-group id="cloudProvider" aria-labelledby="cloud">
       <template is="dom-repeat" items="[[configuration.cluster.cloud.provider]]">
         <paper-radio-button name="[[item.id]]">[[item.name]]</paper-radio-button>
       </template>
@@ -198,9 +146,9 @@ class ClusterCreateForm extends PolymerElement {
   <paper-dropdown-menu label="Region">
 
     <paper-listbox slot="dropdown-content" class="dropdown-content">
-      <paper-item>eu-central-1</paper-item>
-      <paper-item>eu-central-2</paper-item>
-      <paper-item>eu-central-3</paper-item>
+      <template is="dom-repeat" items="[[selectedProvider.regions]]">
+        <paper-item name="[[item.id]]">[[item.name]]</paper-item>
+      </template>
     </paper-listbox>
 
   </paper-dropdown-menu>
@@ -222,10 +170,10 @@ class ClusterCreateForm extends PolymerElement {
   </paper-dropdown-menu>
 
   <div class="border"></div>
-  <label id="cloud">Cluster Components</label>
+  <label id="cloudComponents">Cluster Components</label>
   <div class="checkbox-container">
     <template is="dom-repeat" items="[[configuration.cluster.clusterComponents.type]]">
-      <paper-checkbox name="[[item.id]]">[[item.name]]</paper-radio-button>
+      <paper-checkbox name="[[item.id]]">[[item.name]]</paper-checkbox>
     </template>
   </div>
   <div class="card-content">
@@ -258,6 +206,7 @@ class ClusterCreateForm extends PolymerElement {
         super.ready();
         this._generateRequest('GET', this.url);
 
+        this.addEventListener('paper-radio-group-changed', this.providerSelected);
     }
 
     _generateRequest(method, url) {
@@ -265,6 +214,23 @@ class ClusterCreateForm extends PolymerElement {
         ajax.method = method;
         ajax.url = url;
         ajax.generateRequest();
+    }
+
+    providerSelected() {
+        const selectedProviderId = this.$.cloudProvider.selected;
+        let selectedProvider;
+        this.configuration.cluster.cloud.provider.forEach(
+            item => {
+                if(item.id === selectedProviderId) {
+                     selectedProvider = item;
+                }
+            }
+
+        );
+
+        this.selectedProvider = selectedProvider;
+        console.log('providerSelected', this.selectedProvider);
+
     }
 
     _onLastResponseChanged (event, response) {

@@ -6,7 +6,21 @@
       "provider": [
         {
           "id": "aws",
-          "name": "AWS"
+          "name": "AWS",
+          "regions": [
+            {
+              "id": "eu-central-1",
+              "name": "eu-central-1"
+            },
+            {
+              "id": "eu-central-2",
+              "name": "eu-central-2"
+            },
+            {
+              "id": "eu-central-3",
+              "name": "eu-central-3"
+            }
+          ]
         },
         {
           "id": "digitalocean",
