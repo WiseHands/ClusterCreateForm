@@ -131,6 +131,10 @@ class ClusterCreateForm extends PolymerElement {
                         margin-right: 0;
                     }
                 }
+
+                paper-dropdown-menu[hidden] {
+                    visibility: hidden;
+                }
             </style>
 
 <paper-card heading="Add cluster">
@@ -143,9 +147,9 @@ class ClusterCreateForm extends PolymerElement {
       </template>
     </paper-radio-group>
 
-  <paper-dropdown-menu label="Region">
+  <paper-dropdown-menu id="regionDropdown" hidden$="[[!_areRegionsSet(selectedProvider)]]" label="Region">
 
-    <paper-listbox slot="dropdown-content" class="dropdown-content">
+    <paper-listbox id="regionListbox" slot="dropdown-content" class="dropdown-content">
       <template is="dom-repeat" items="[[selectedProvider.regions]]">
         <paper-item name="[[item.id]]">[[item.name]]</paper-item>
       </template>
@@ -198,6 +202,9 @@ class ClusterCreateForm extends PolymerElement {
             url: {
                 type: String,
                 value: 'src/cluster.json'
+            },
+            selectedProvider: {
+                type: Object
             }
         };
     }
@@ -205,6 +212,7 @@ class ClusterCreateForm extends PolymerElement {
     ready() {
         super.ready();
         this._generateRequest('GET', this.url);
+        this.selectedProvider = {};
 
         this.addEventListener('paper-radio-group-changed', this.providerSelected);
     }
@@ -217,6 +225,8 @@ class ClusterCreateForm extends PolymerElement {
     }
 
     providerSelected() {
+        this.$.regionDropdown.value = '';
+        this.$.regionListbox.selected = 999;
         const selectedProviderId = this.$.cloudProvider.selected;
         let selectedProvider;
         this.configuration.cluster.cloud.provider.forEach(
@@ -236,6 +246,12 @@ class ClusterCreateForm extends PolymerElement {
     _onLastResponseChanged (event, response) {
         console.log(response.value);
         this.configuration = response.value;
+    }
+
+    _areRegionsSet(provider) {
+        const areSet = !!provider && !!provider.regions && provider.regions.length > 0;
+        console.log('are set', areSet, provider)
+        return areSet
     }
 
 }

@@ -28,7 +28,21 @@
         },
         {
           "id": "googlecloud",
-          "name": "GoogleCloud"
+          "name": "GoogleCloud",
+          "regions": [
+            {
+              "id": "21",
+              "name": "eu21"
+            },
+            {
+              "id": "32l-2",
+              "name": "eu32"
+            },
+            {
+              "id": "e12ral-3",
+              "name": "eu43"
+            }
+          ]
         }
       ],
       "region": "eu-central-1",
