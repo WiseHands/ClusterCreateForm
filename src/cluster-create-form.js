@@ -10,6 +10,8 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
+import '/src/cluster-provider.js';
+import '/src/provisioner-configurator.js';
 
 class ClusterCreateForm extends PolymerElement {
     static get template() {
@@ -139,39 +141,10 @@ class ClusterCreateForm extends PolymerElement {
 
 <paper-card heading="Add cluster">
   <paper-input always-float-label label="Name"></paper-input>
-  <label id="cloud">Cloud</label>
-
-    <paper-radio-group id="cloudProvider" aria-labelledby="cloud">
-      <template is="dom-repeat" items="[[configuration.cluster.cloud.provider]]">
-        <paper-radio-button name="[[item.id]]">[[item.name]]</paper-radio-button>
-      </template>
-    </paper-radio-group>
-
-  <paper-dropdown-menu id="regionDropdown" hidden$="[[!_areRegionsSet(selectedProvider)]]" label="Region">
-
-    <paper-listbox id="regionListbox" slot="dropdown-content" class="dropdown-content">
-      <template is="dom-repeat" items="[[selectedProvider.regions]]">
-        <paper-item name="[[item.id]]">[[item.name]]</paper-item>
-      </template>
-    </paper-listbox>
-
-  </paper-dropdown-menu>
+  <cluster-provider configuration=[[configuration]]></cluster-provider>
   <div class="border"></div>
 
-  <label id="provisioner">Provisioner</label>
-  <paper-radio-group aria-labelledby="provisioner">
-    <template is="dom-repeat" items="[[configuration.cluster.provisioner.type]]">
-      <paper-radio-button name="[[item.id]]">[[item.name]]</paper-radio-button>
-    </template>
-  </paper-radio-group>
-
-  <paper-dropdown-menu label="Instance Type">
-    <paper-listbox slot="dropdown-content" class="dropdown-content">
-      <paper-item>m5.large</paper-item>
-      <paper-item>m5.large</paper-item>
-      <paper-item>m5.large</paper-item>
-    </paper-listbox>
-  </paper-dropdown-menu>
+  <provisioner-configurator configuration=[[configuration]]></provisioner-configurator>
 
   <div class="border"></div>
   <label id="cloudComponents">Cluster Components</label>
@@ -202,9 +175,6 @@ class ClusterCreateForm extends PolymerElement {
             url: {
                 type: String,
                 value: 'src/cluster.json'
-            },
-            selectedProvider: {
-                type: Object
             }
         };
     }
@@ -212,9 +182,7 @@ class ClusterCreateForm extends PolymerElement {
     ready() {
         super.ready();
         this._generateRequest('GET', this.url);
-        this.selectedProvider = {};
 
-        this.addEventListener('paper-radio-group-changed', this.providerSelected);
     }
 
     _generateRequest(method, url) {
@@ -224,34 +192,9 @@ class ClusterCreateForm extends PolymerElement {
         ajax.generateRequest();
     }
 
-    providerSelected() {
-        this.$.regionDropdown.value = '';
-        this.$.regionListbox.selected = 999;
-        const selectedProviderId = this.$.cloudProvider.selected;
-        let selectedProvider;
-        this.configuration.cluster.cloud.provider.forEach(
-            item => {
-                if(item.id === selectedProviderId) {
-                     selectedProvider = item;
-                }
-            }
-
-        );
-
-        this.selectedProvider = selectedProvider;
-        console.log('providerSelected', this.selectedProvider);
-
-    }
-
     _onLastResponseChanged (event, response) {
         console.log(response.value);
         this.configuration = response.value;
-    }
-
-    _areRegionsSet(provider) {
-        const areSet = !!provider && !!provider.regions && provider.regions.length > 0;
-        console.log('are set', areSet, provider)
-        return areSet
     }
 
 }

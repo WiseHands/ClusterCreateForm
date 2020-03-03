@@ -24,7 +24,21 @@
         },
         {
           "id": "digitalocean",
-          "name": "DigitalOcean"
+          "name": "DigitalOcean",
+          "regions": [
+            {
+              "id": "do-1",
+              "name": "DO-1"
+            },
+            {
+              "id": "do-2",
+              "name": "DO-2"
+            },
+            {
+              "id": "do-3",
+              "name": "DO-3"
+            }
+          ]
         },
         {
           "id": "googlecloud",
@@ -53,15 +67,29 @@
       "type": [
         {
           "id": "minikube",
-          "name": "Minikube"
+          "name": "Minikube",
+          "instanceType": [
+            {
+              "id": "m5-large",
+              "name": "m5.large"
+            }
+          ]
         },
         {
           "id": "eks",
-          "name": "EKS"
+          "name": "EKS",
+          "instanceType": [
+          ]
         },
         {
           "id": "clusterapi",
-          "name": "ClusterApi"
+          "name": "ClusterApi",
+          "instanceType": [
+            {
+              "id": "n10-large",
+              "name": "n10.large"
+            }
+          ]
         }
       ],
       "instanceType": "m5.large"
