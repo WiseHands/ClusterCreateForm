@@ -27,8 +27,6 @@ class ClusterCreateForm extends PolymerElement {
                 }
 
                 paper-radio-group {
-                    display: flex;
-                    flex-direction: row;
                     padding: 0 1em;
                     padding-top: 1em;
                 }
@@ -41,6 +39,7 @@ class ClusterCreateForm extends PolymerElement {
                     flex: 1;
                     margin-bottom: 1em;
                     padding-bottom: .5em;
+                    width: 100%;
                 }
 
                 span[slot=prefix] {

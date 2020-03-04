@@ -10,8 +10,6 @@ class ClusterProvider extends PolymerElement {
         return html`
             <style>
                 paper-radio-group {
-                    display: flex;
-                    flex-direction: row;
                     padding: 0 1em;
                     padding-top: 1em;
                 }
@@ -38,7 +36,7 @@ class ClusterProvider extends PolymerElement {
   <label id="cloud">Cloud</label>
 
     <paper-radio-group id="cloudProvider" aria-labelledby="cloud">
-      <template is="dom-repeat" items="[[configuration.cluster.cloud.provider]]">
+      <template is="dom-repeat" items="[[configuration.cluster.cloud.providerList]]">
         <paper-radio-button name="[[item.id]]">[[item.name]]</paper-radio-button>
       </template>
     </paper-radio-group>
@@ -77,7 +75,7 @@ class ClusterProvider extends PolymerElement {
         this.$.regionListbox.selected = 999;
         const selectedProviderId = this.$.cloudProvider.selected;
         let selectedProvider;
-        this.configuration.cluster.cloud.provider.forEach(
+        this.configuration.cluster.cloud.providerList.forEach(
             item => {
                 if(item.id === selectedProviderId) {
                      selectedProvider = item;
@@ -91,9 +89,9 @@ class ClusterProvider extends PolymerElement {
 
     }
 
-    _areRegionsSet(provider) {
-        const areSet = !!provider && !!provider.regions && provider.regions.length > 0;
-        console.log('are set', areSet, provider)
+    _areRegionsSet(providerList) {
+        const areSet = !!providerList && !!providerList.regions && providerList.regions.length > 0;
+        console.log('are set', areSet, providerList)
         return areSet
     }
 

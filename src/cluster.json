@@ -3,7 +3,7 @@
     "name": "minikube-aws",
     "installed": true,
     "cloud": {
-      "provider": [
+      "providerList": [
         {
           "id": "aws",
           "name": "AWS",
@@ -68,7 +68,7 @@
         {
           "id": "minikube",
           "name": "Minikube",
-          "instanceType": [
+          "instanceTypeList": [
             {
               "id": "m5-large",
               "name": "m5.large"
@@ -78,13 +78,13 @@
         {
           "id": "eks",
           "name": "EKS",
-          "instanceType": [
+          "instanceTypeList": [
           ]
         },
         {
           "id": "clusterapi",
           "name": "ClusterApi",
-          "instanceType": [
+          "instanceTypeList": [
             {
               "id": "n10-large",
               "name": "n10.large"
