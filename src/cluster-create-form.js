@@ -149,7 +149,7 @@ class ClusterCreateForm extends PolymerElement {
   <div class="border"></div>
   <label id="cloudComponents">Cluster Components</label>
   <div class="checkbox-container">
-    <template is="dom-repeat" items="[[configuration.cluster.components.type]]">
+    <template is="dom-repeat" items="[[configuration.cluster.provisioner.components]]">
       <paper-checkbox name="[[item.id]]">[[item.name]]</paper-checkbox>
     </template>
   </div>

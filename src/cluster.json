@@ -92,10 +92,7 @@
           ]
         }
       ],
-      "instanceType": "m5.large"
-    },
-    "components": {
-      "type": [
+      "components": [
         {
           "id": "ingresscontroller",
           "name": "Ingress Controller"
@@ -120,8 +117,7 @@
           "id": "letsencrypt",
           "name": "Cert-Manager LetsEncrypt"
         }
-      ],
-      "instanceType": "m5.large"
+      ]
     }
   },
   "envs": [
