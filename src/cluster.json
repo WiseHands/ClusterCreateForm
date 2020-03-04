@@ -94,7 +94,7 @@
       ],
       "instanceType": "m5.large"
     },
-    "clusterComponents": {
+    "components": {
       "type": [
         {
           "id": "ingresscontroller",
