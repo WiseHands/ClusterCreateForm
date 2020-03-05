@@ -158,11 +158,14 @@ class ClusterCreateForm extends PolymerElement {
   <div class="border"></div>
 
   <div class="card-actions">
-    <paper-button>Create Cluster</paper-button>
+    <paper-button on-click="sendClusterData">Create Cluster</paper-button>
   </div>
+    
+    <div id="responseYaml"></div>
 </paper-card>
 
-<iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
+            <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
+            <iron-ajax id="createCluster" handle-as="text" on-last-response-changed="_onCreateClusterResponse"></iron-ajax>
         `;
     }
 
@@ -195,6 +198,27 @@ class ClusterCreateForm extends PolymerElement {
         console.log(response.value);
         this.configuration = response.value;
     }
+
+    sendClusterData() {
+        const body = {
+            a: 'sdasd',
+            b: 5
+        };
+
+        const createCluster = this.$.createCluster;
+        createCluster.method = "POST";
+        createCluster.url = "/cluster";
+        createCluster.body = JSON.stringify(body);
+
+        createCluster.generateRequest();
+    }
+
+    _onCreateClusterResponse (event, response) {
+        console.log(response, response.value);
+        this.$.responseYaml.innerText = response.value;
+    }
+
+
 
 }
 
