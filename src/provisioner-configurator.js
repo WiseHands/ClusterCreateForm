@@ -75,7 +75,16 @@ class ProvisionerConfigurator extends PolymerElement {
         this.configuration.cluster.provisioner.type.forEach(
             item => {
                 if(item.id === selectedTypeId) {
-                     selectedType = item;
+                    //provisioner-selected item
+
+                    selectedType = item;
+                    this.dispatchEvent(new CustomEvent('provisioner-selected',
+                            {
+                                detail: item,
+                                bubbles: true,
+                                composed: true
+                            }
+                        ));
                 }
             }
 
