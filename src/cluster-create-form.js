@@ -16,7 +16,7 @@ import '/src/provisioner-configurator.js';
 class ClusterCreateForm extends PolymerElement {
     static get template() {
         // language=HTML
-        return html`
+        return html`            
             <style>
                 :host {
                     display: block;
@@ -160,8 +160,8 @@ class ClusterCreateForm extends PolymerElement {
   <div class="card-actions">
     <paper-button on-click="sendClusterData">Create Cluster</paper-button>
   </div>
-    
-    <div id="responseYaml"></div>
+
+    <pre><code class="html" id="responseYaml">...</code></pre>
 </paper-card>
 
             <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
