@@ -79,6 +79,7 @@ class ClusterProvider extends PolymerElement {
 
     _regionObserver(val) {
         console.log('_regionObserver', val);
+        if(val === 999) return;
         let region = this.selectedProvider.regions[val];
         this.dispatchEvent(new CustomEvent('cluster-region-selected',
             {
