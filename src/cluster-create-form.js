@@ -229,7 +229,9 @@ class ClusterCreateForm extends PolymerElement {
 
     _onCreateClusterResponse (event, response) {
         console.log(response, response.value);
-        this.$.responseYaml.innerText = response.value;
+        let escapedText = response.value;
+        escapedText = escapedText.replace(/ /g, '&nbsp;').replace(/(?:\r\n|\r|\n)/g, '<br>');
+        this.$.responseYaml.innerHTML = escapedText;
     }
 
 
