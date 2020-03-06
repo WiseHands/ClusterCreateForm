@@ -31,6 +31,9 @@ class ProvisionerConfigurator extends PolymerElement {
                 paper-dropdown-menu {
                     margin-left: 2em;
                 }
+                paper-item:hover {
+                    cursor: pointer;
+                }
             </style>
   <label id="provisioner">Provisioner</label>
   <paper-radio-group id="instanceTypeList" aria-labelledby="provisioner">

@@ -31,6 +31,9 @@ class ClusterProvider extends PolymerElement {
                 paper-dropdown-menu {
                     margin-left: 2em;
                 }
+                paper-item:hover {
+                    cursor: pointer;
+                }
             </style>
 
   <label id="cloud">Cloud</label>
