@@ -203,18 +203,18 @@ class ClusterCreateForm extends PolymerElement {
         const clusterName = this.$.clusterName.value || "";
 
         const body = {
-            "cluster": {
-                "name": clusterName,
-                "installed": true,
-                "cloud": {
-                    "provider": "aws",
-                    "region": "eu-central-1",
-                    "vpc": "default",
-                    "domain": "shalb.net"
+            cluster: {
+                name: clusterName,
+                installed: true,
+                cloud: {
+                    provider: "aws",
+                    region: "eu-central-1",
+                    vpc: "default",
+                    domain: "shalb.net"
                 },
-                "provisioner": {
-                    "type": "minikube",
-                    "instanceType": "m5.large"
+                provisioner: {
+                    type: "minikube",
+                    instanceType: "m5.large"
                 }
             },
         };
@@ -229,9 +229,9 @@ class ClusterCreateForm extends PolymerElement {
 
     _onCreateClusterResponse (event, response) {
         console.log(response, response.value);
-        let escapedText = response.value;
-        escapedText = escapedText.replace(/ /g, '&nbsp;').replace(/(?:\r\n|\r|\n)/g, '<br>');
-        this.$.responseYaml.innerHTML = escapedText;
+        let text = response.value;
+        text = text.replace(/ /g, '&nbsp;').replace(/(?:\r\n|\r|\n)/g, '<br>');
+        this.$.responseYaml.innerHTML = text;
     }
 
 
