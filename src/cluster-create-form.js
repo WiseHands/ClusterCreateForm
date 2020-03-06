@@ -161,7 +161,7 @@ class ClusterCreateForm extends PolymerElement {
     <paper-button on-click="sendClusterData">Create Cluster</paper-button>
   </div>
 
-    <pre><code class="html" id="responseYaml">...</code></pre>
+    <pre><code class="yaml" id="responseYaml">...</code></pre>
 </paper-card>
 
             <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
