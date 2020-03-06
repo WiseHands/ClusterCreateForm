@@ -183,8 +183,22 @@ class ClusterCreateForm extends PolymerElement {
 
     ready() {
         super.ready();
+
+        this.addEventListener('cluster-provider-selected', this.onClusterProviderSelected);
+        this.addEventListener('provisioner-selected', this.onProvisionerSelected);
+
         this._generateRequest('GET', this.url);
 
+    }
+
+    onClusterProviderSelected(event) {
+        console.log('onClusterProviderSelected: ', event, event.detail);
+        this.selectedClusterProviderSelected = event.detail.id;
+    }
+
+    onProvisionerSelected(event) {
+        console.log('onProvisionerSelected: ', event, event.detail);
+        this.selectedProvisionerId = event.detail.id;
     }
 
     _generateRequest(method, url) {
@@ -207,13 +221,13 @@ class ClusterCreateForm extends PolymerElement {
                 name: clusterName,
                 installed: true,
                 cloud: {
-                    provider: "aws",
+                    provider: this.selectedClusterProviderSelected,
                     region: "eu-central-1",
                     vpc: "default",
                     domain: "shalb.net"
                 },
                 provisioner: {
-                    type: "minikube",
+                    type: this.selectedProvisionerId,
                     instanceType: "m5.large"
                 }
             },

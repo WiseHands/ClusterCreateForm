@@ -82,6 +82,13 @@ class ClusterProvider extends PolymerElement {
             item => {
                 if(item.id === selectedProviderId) {
                      selectedProvider = item;
+                    this.dispatchEvent(new CustomEvent('cluster-provider-selected',
+                        {
+                            detail: item,
+                            bubbles: true,
+                            composed: true
+                        }
+                    ));
                 }
             }
 

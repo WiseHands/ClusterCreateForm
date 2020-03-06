@@ -94,7 +94,7 @@ class ProvisionerConfigurator extends PolymerElement {
         );
 
         this.selectedType = selectedType;
-        console.log('typeSelected', this.selectedType);
+        console.log('provisioner type selected', this.selectedType);
 
     }
 
