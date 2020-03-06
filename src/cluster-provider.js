@@ -46,7 +46,7 @@ class ClusterProvider extends PolymerElement {
 
   <paper-dropdown-menu id="regionDropdown" hidden$="[[!_areRegionsSet(selectedProvider)]]" label="Region">
 
-    <paper-listbox id="regionListbox" slot="dropdown-content" class="dropdown-content">
+    <paper-listbox selected="{{selectedRegion}}" id="regionListbox" slot="dropdown-content" class="dropdown-content">
       <template is="dom-repeat" items="[[selectedProvider.regions]]">
         <paper-item name="[[item.id]]">[[item.name]]</paper-item>
       </template>
@@ -63,6 +63,10 @@ class ClusterProvider extends PolymerElement {
             },
             selectedProvider: {
                 type: Object
+            },
+            selectedRegion: {
+                type: Object,
+                observer: '_regionObserver'
             }
         };
     }
@@ -71,6 +75,18 @@ class ClusterProvider extends PolymerElement {
         super.ready();
         this.selectedProvider = {};
         this.addEventListener('paper-radio-group-changed', this.providerSelected);
+    }
+
+    _regionObserver(val) {
+        console.log('_regionObserver', val);
+        let region = this.selectedProvider.regions[val];
+        this.dispatchEvent(new CustomEvent('cluster-region-selected',
+            {
+                detail: region,
+                bubbles: true,
+                composed: true
+            }
+        ));
     }
 
     providerSelected() {

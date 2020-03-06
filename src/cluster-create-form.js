@@ -186,9 +186,15 @@ class ClusterCreateForm extends PolymerElement {
 
         this.addEventListener('cluster-provider-selected', this.onClusterProviderSelected);
         this.addEventListener('provisioner-selected', this.onProvisionerSelected);
+        this.addEventListener('cluster-region-selected', this.onClusterRegionSelected);
 
         this._generateRequest('GET', this.url);
 
+    }
+
+    onClusterRegionSelected(event) {
+        console.log('onClusterRegionSelected: ', event, event.detail);
+        this.selectedClusterRegionSelected = event.detail.id;
     }
 
     onClusterProviderSelected(event) {
@@ -222,7 +228,7 @@ class ClusterCreateForm extends PolymerElement {
                 installed: true,
                 cloud: {
                     provider: this.selectedClusterProviderSelected,
-                    region: "eu-central-1",
+                    region: this.selectedClusterRegionSelected,
                     vpc: "default",
                     domain: "shalb.net"
                 },
