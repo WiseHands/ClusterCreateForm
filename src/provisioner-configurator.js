@@ -43,7 +43,7 @@ class ProvisionerConfigurator extends PolymerElement {
   </paper-radio-group>
 
   <paper-dropdown-menu id="provisionerTypeDropdown" hidden$="[[!_areTypesSet(selectedType)]]" label="Instance Type">
-    <paper-listbox id="typeListbox" slot="dropdown-content" class="dropdown-content">
+    <paper-listbox selected="{{selectedInstanceType}}" id="typeListbox" slot="dropdown-content" class="dropdown-content">
       <template is="dom-repeat" items="[[selectedType.instanceTypeList]]">
         <paper-item name="[[item.id]]">[[item.name]]</paper-item>
       </template>
@@ -60,6 +60,10 @@ class ProvisionerConfigurator extends PolymerElement {
             },
             selectedType: {
                 type: Object
+            },
+            selectedInstanceType: {
+                type: Object,
+                observer: '_provisionerTypeObserver'
             }
         };
     }
@@ -68,6 +72,19 @@ class ProvisionerConfigurator extends PolymerElement {
         super.ready();
         this.selectedType = {};
         this.addEventListener('paper-radio-group-changed', this.typeSelected);
+    }
+
+    _provisionerTypeObserver(val) {
+        console.log('_provisionerTypeObserver', val);
+        if(val === 999) return;
+        let InstanceType = this.selectedType.instanceTypeList[val];
+        this.dispatchEvent(new CustomEvent('instance-type-selected',
+            {
+                detail: InstanceType,
+                bubbles: true,
+                composed: true
+            }
+        ));
     }
 
     typeSelected() {
@@ -100,7 +117,7 @@ class ProvisionerConfigurator extends PolymerElement {
 
     _areTypesSet(type) {
         const areSet = !!type && !!type.instanceTypeList && type.instanceTypeList.length > 0;
-        console.log('are set', areSet, type)
+        console.log('are set', areSet, type);
         return areSet
     }
 

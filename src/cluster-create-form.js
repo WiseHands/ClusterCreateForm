@@ -185,8 +185,9 @@ class ClusterCreateForm extends PolymerElement {
         super.ready();
 
         this.addEventListener('cluster-provider-selected', this.onClusterProviderSelected);
-        this.addEventListener('provisioner-selected', this.onProvisionerSelected);
         this.addEventListener('cluster-region-selected', this.onClusterRegionSelected);
+        this.addEventListener('provisioner-selected', this.onProvisionerSelected);
+        this.addEventListener('instance-type-selected', this.onProvisionerTypeSelected);
 
         this._generateRequest('GET', this.url);
 
@@ -205,6 +206,11 @@ class ClusterCreateForm extends PolymerElement {
     onProvisionerSelected(event) {
         console.log('onProvisionerSelected: ', event, event.detail);
         this.selectedProvisionerId = event.detail.id;
+    }
+
+    onProvisionerTypeSelected(event) {
+        console.log('onProvisionerTypeSelected: ', event, event.detail);
+        this.selectedProvisionerTypeSelected = event.detail.id;
     }
 
     _generateRequest(method, url) {
@@ -234,7 +240,7 @@ class ClusterCreateForm extends PolymerElement {
                 },
                 provisioner: {
                     type: this.selectedProvisionerId,
-                    instanceType: "m5.large"
+                    instanceType: this.selectedProvisionerTypeSelected
                 }
             },
         };
