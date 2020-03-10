@@ -118,6 +118,22 @@
           "name": "Cert-Manager LetsEncrypt"
         }
       ]
+    },
+    "vpc": {
+      "state": [
+        {
+          "id": "default",
+          "name": "Default"
+        },
+        {
+          "id": "create",
+          "name": "Create"
+        },
+        {
+          "id": "use-existing",
+          "name": "Use existing"
+        }
+      ]
     }
   },
   "envs": [
