@@ -136,6 +136,10 @@ class ClusterCreateForm extends PolymerElement {
                 paper-dropdown-menu[hidden] {
                     visibility: hidden;
                 }
+                
+                pre {
+                    padding: 5px 16px;
+                }
             </style>
 
 <paper-card heading="Add cluster">
