@@ -38,7 +38,7 @@ class ClusterProvider extends PolymerElement {
 
   <label id="cloud">Cloud</label>
 
-    <paper-radio-group id="cloudProvider" aria-labelledby="cloud">
+    <paper-radio-group id="cloudProvider" selected="[[selectedProviderId]]" aria-labelledby="cloud">
       <template is="dom-repeat" items="[[configuration.cluster.cloud.providerList]]">
         <paper-radio-button name="[[item.id]]">[[item.name]]</paper-radio-button>
       </template>
@@ -69,6 +69,24 @@ class ClusterProvider extends PolymerElement {
                 observer: '_regionObserver'
             }
         };
+    }
+
+    static get observers() {
+        return [
+            'providerChanged(configuration.cluster.cloud.providerList)'
+        ]
+    }
+
+    providerChanged(list) {
+        console.log('list', list);
+
+        this.configuration.cluster.cloud.providerList.forEach(
+            item => {
+                    if(item.default) {
+                       this.selectedProviderId = item.id;
+                    }
+            }
+        )
     }
 
     ready() {

@@ -25,6 +25,7 @@
         {
           "id": "digitalocean",
           "name": "DigitalOcean",
+          "default": true,
           "regions": [
             {
               "id": "do-1",
@@ -84,6 +85,7 @@
         {
           "id": "clusterapi",
           "name": "ClusterApi",
+          "default": true,
           "instanceTypeList": [
             {
               "id": "n10-large",
@@ -123,7 +125,8 @@
       "state": [
         {
           "id": "default",
-          "name": "Default"
+          "name": "Default",
+          "default": true
         },
         {
           "id": "create",

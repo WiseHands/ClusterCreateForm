@@ -151,12 +151,9 @@ class ClusterCreateForm extends PolymerElement {
 
     <virtual-private-cloud configuration=[[configuration]]></virtual-private-cloud>
     
-    
   <div class="border"></div>
 
   <provisioner-configurator configuration=[[configuration]]></provisioner-configurator>
-
-
 
   <div class="border"></div>
   <label id="cloudComponents">Cluster Components</label>

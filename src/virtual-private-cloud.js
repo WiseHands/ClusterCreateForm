@@ -36,7 +36,7 @@ class VirtualPrivateCloud extends PolymerElement {
                 }
             </style>
   <label id="vpc">Virtual Private Cloud</label>
-  <paper-radio-group id="vpcList" aria-labelledby="vpc">
+  <paper-radio-group id="vpcList" selected="[[selectedVpcId]]" aria-labelledby="vpc">
     <template is="dom-repeat" items="[[configuration.cluster.vpc.state]]">
       <paper-radio-button name="[[item.id]]">[[item.name]]</paper-radio-button>
     </template>
@@ -56,6 +56,24 @@ class VirtualPrivateCloud extends PolymerElement {
                 observer: '_VpcStateObserver'
             }
         };
+    }
+
+    static get observers() {
+        return [
+            'vpcChanged(configuration.cluster.vpc.state)'
+        ]
+    }
+
+    vpcChanged(list) {
+        console.log('list', list);
+
+        this.configuration.cluster.vpc.state.forEach(
+            item => {
+                if(item.default) {
+                    this.selectedVpcId = item.id;
+                }
+            }
+        )
     }
 
     ready() {

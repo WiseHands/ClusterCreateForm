@@ -36,7 +36,7 @@ class ProvisionerConfigurator extends PolymerElement {
                 }
             </style>
   <label id="provisioner">Provisioner</label>
-  <paper-radio-group id="instanceTypeList" aria-labelledby="provisioner">
+  <paper-radio-group id="instanceTypeList" selected="[[selectedProvisionerId]]" aria-labelledby="provisioner">
     <template is="dom-repeat" items="[[configuration.cluster.provisioner.type]]">
       <paper-radio-button name="[[item.id]]">[[item.name]]</paper-radio-button>
     </template>
@@ -66,6 +66,24 @@ class ProvisionerConfigurator extends PolymerElement {
                 observer: '_provisionerTypeObserver'
             }
         };
+    }
+
+    static get observers() {
+        return [
+            'provisionerChanged(configuration.cluster.provisioner.type)'
+        ]
+    }
+
+    provisionerChanged(list) {
+        console.log('list', list);
+
+        this.configuration.cluster.provisioner.type.forEach(
+            item => {
+                if(item.default) {
+                    this.selectedProvisionerId = item.id;
+                }
+            }
+        )
     }
 
     ready() {
