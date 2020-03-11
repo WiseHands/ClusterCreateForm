@@ -77,13 +77,6 @@ class ClusterProvider extends PolymerElement {
         ]
     }
 
-    // Element class can define custom element reactions
-    connectedCallback() {
-        super.connectedCallback();
-        this.textContent = 'I\'m a custom element!';
-        console.log('my-element created!');
-    }
-
     providerChanged(list) {
         console.log('list', list);
 

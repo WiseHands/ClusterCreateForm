@@ -71,9 +71,11 @@ class VirtualPrivateCloud extends PolymerElement {
             item => {
                 if(item.default) {
                     this.selectedVpcId = item.id;
+                    this.selectedState = item;
                 }
             }
-        )
+        );
+
     }
 
     ready() {

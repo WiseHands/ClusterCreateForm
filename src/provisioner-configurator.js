@@ -81,7 +81,15 @@ class ProvisionerConfigurator extends PolymerElement {
             item => {
                 if(item.default) {
                     this.selectedProvisionerId = item.id;
+                    this.selectedType = item;
                 }
+            }
+        );
+
+        this.selectedType.instanceTypeList.forEach(
+            (instanceType, index) => {
+                if(instanceType.default)
+                    this.$.typeListbox.selected = index;
             }
         )
     }
