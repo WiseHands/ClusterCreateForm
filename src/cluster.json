@@ -33,7 +33,8 @@
             },
             {
               "id": "do-2",
-              "name": "DO-2"
+              "name": "DO-2",
+              "default": true
             },
             {
               "id": "do-3",
