@@ -9,10 +9,10 @@ import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
 import '/src/cluster-provider.js';
 import '/src/provisioner-configurator.js';
 import '/src/virtual-private-cloud.js';
+import '/src/components-selector.js';
 
 class ClusterCreateForm extends PolymerElement {
     static get template() {
@@ -78,9 +78,6 @@ class ClusterCreateForm extends PolymerElement {
 
                 label {
                     padding-left: 1em;
-                }
-                paper-checkbox {
-                    margin: 0.5em;
                 }
 
                 .card-actions {
@@ -159,7 +156,7 @@ class ClusterCreateForm extends PolymerElement {
   <label id="cloudComponents">Cluster Components</label>
   <div class="checkbox-container">
     <template is="dom-repeat" items="[[configuration.cluster.provisioner.components]]">
-      <paper-checkbox name="[[item.id]]">[[item.name]]</paper-checkbox>
+        <components-selector item="[[item]]"></components-selector>
     </template>
   </div>
   <div class="card-content">
@@ -200,6 +197,7 @@ class ClusterCreateForm extends PolymerElement {
         this.addEventListener('instance-type-selected', this.onProvisionerTypeSelected);
         this.addEventListener('vpc-selected', this.onVpcSelected);
         this.addEventListener('vpc-id-entered', this.onVpcIdEntered);
+        this.addEventListener('component-id-selected', this.onClusterComponentsChecked);
 
         this._generateRequest('GET', this.url);
 
@@ -233,6 +231,11 @@ class ClusterCreateForm extends PolymerElement {
     onVpcIdEntered(event) {
         console.log('onVpcIdEntered', event.detail);
         this.vpcId = event.detail;
+    }
+
+    onClusterComponentsChecked(event) {
+        console.log('onClusterComponentsChecked', event.detail);
+        this.componentsId = event.detail;
     }
 
     _generateRequest(method, url) {
