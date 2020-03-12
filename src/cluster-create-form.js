@@ -276,7 +276,7 @@ class ClusterCreateForm extends PolymerElement {
 
         const createCluster = this.$.createCluster;
         createCluster.method = "POST";
-        createCluster.url = "http://localhost:5447/cluster";
+        createCluster.url = "/cluster";
         createCluster.body = JSON.stringify(body);
 
         createCluster.generateRequest();
