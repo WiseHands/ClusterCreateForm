@@ -249,9 +249,9 @@ class ClusterCreateForm extends PolymerElement {
 
     sendClusterData() {
         const clusterName = this.$.clusterName.value || "";
-        let vpc = this.selectedVpcSelected;
+        let vpcId = this.selectedVpcSelected;
         if(this.selectedVpcSelected === 'use-existing') {
-            vpc = this.vpcId;
+            vpcId = this.vpcId;
         }
 
         const body = {
@@ -261,7 +261,8 @@ class ClusterCreateForm extends PolymerElement {
                 cloud: {
                     provider: this.selectedClusterProviderSelected,
                     region: this.selectedClusterRegionSelected,
-                    vpc: vpc,
+                    vpc: this.selectedVpcSelected,
+                    vpcId: vpcId,
                     domain: "shalb.net"
                 },
                 provisioner: {
