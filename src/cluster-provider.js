@@ -94,7 +94,25 @@ class ClusterProvider extends PolymerElement {
                 if(region.default)
                     this.$.regionListbox.selected = index;
             }
-        )
+        );
+
+        const selectedProviderId = this.$.cloudProvider.selected;
+        let selectedProvider;
+        this.configuration.cluster.cloud.providerList.forEach(
+            item => {
+                if(item.id === selectedProviderId) {
+                    selectedProvider = item;
+                    this.dispatchEvent(new CustomEvent('cluster-provider-selected',
+                        {
+                            detail: item,
+                            bubbles: true,
+                            composed: true
+                        }
+                    ));
+                }
+            }
+
+        );
     }
 
     ready() {
@@ -103,11 +121,12 @@ class ClusterProvider extends PolymerElement {
     }
 
     _regionObserver(val) {
+        console.log('_regionObserver', val);
         if(val === 999) return;
-
+        let region = this.selectedProvider.regions[val];
         this.dispatchEvent(new CustomEvent('cluster-region-selected',
             {
-                detail: this.selectedRegion,
+                detail: region,
                 bubbles: true,
                 composed: true
             }
@@ -118,6 +137,7 @@ class ClusterProvider extends PolymerElement {
     providerSelected() {
         this.$.regionDropdown.value = '';
         this.$.regionListbox.selected = 999;
+
         const selectedProviderId = this.$.cloudProvider.selected;
         let selectedProvider;
         this.configuration.cluster.cloud.providerList.forEach(

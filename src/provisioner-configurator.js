@@ -91,7 +91,27 @@ class ProvisionerConfigurator extends PolymerElement {
                 if(instanceType.default)
                     this.$.typeListbox.selected = index;
             }
-        )
+        );
+
+        const selectedTypeId = this.$.instanceTypeList.selected;
+        let selectedType;
+        this.configuration.cluster.provisioner.type.forEach(
+            item => {
+                if(item.id === selectedTypeId) {
+                    //provisioner-selected item
+
+                    selectedType = item;
+                    this.dispatchEvent(new CustomEvent('provisioner-selected',
+                        {
+                            detail: item,
+                            bubbles: true,
+                            composed: true
+                        }
+                    ));
+                }
+            }
+
+        );
     }
 
     ready() {
@@ -116,6 +136,7 @@ class ProvisionerConfigurator extends PolymerElement {
     typeSelected() {
         this.$.provisionerTypeDropdown.value = '';
         this.$.typeListbox.selected = 999;
+
         const selectedTypeId = this.$.instanceTypeList.selected;
         let selectedType;
         this.configuration.cluster.provisioner.type.forEach(
