@@ -42,7 +42,7 @@ class VirtualPrivateCloud extends PolymerElement {
     </template>
   </paper-radio-group>
 
-  <paper-input label="VPC ID" id="vpcId" on-blur="onVpcIdBlur" hide$="[[!_areStateSet(selectedState)]]"/>
+  <paper-input label="VPC ID" id="vpcId" on-blur="onVpcIdBlur" hide$="[[!_areStateSet(selectedState)]]" value="[[selectedVpcIdText]]"/>
         `;
     }
 
@@ -71,6 +71,7 @@ class VirtualPrivateCloud extends PolymerElement {
             item => {
                 if(item.default) {
                     this.selectedVpcId = item.id;
+                    this.selectedVpcIdText = item.vpcId;
                     this.selectedState = item;
                 }
             }

@@ -135,6 +135,7 @@
         },
         {
           "id": "use-existing",
+          "vpcId": "myId",
           "name": "Use existing",
           "default": true
         }

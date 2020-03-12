@@ -227,7 +227,7 @@ class ClusterCreateForm extends PolymerElement {
 
     onVpcSelected(event) {
         console.log('onVpcSelected: ', event, event.detail);
-        this.selectedVpcSelected = event.detail.id;
+        this.selectedVpcSelected = event.detail;
     }
 
     onVpcIdEntered(event) {
@@ -249,9 +249,9 @@ class ClusterCreateForm extends PolymerElement {
 
     sendClusterData() {
         const clusterName = this.$.clusterName.value || "";
-        let vpcId = this.selectedVpcSelected;
-        if(this.selectedVpcSelected === 'use-existing') {
-            vpcId = this.vpcId;
+        let vpcId = this.selectedVpcSelected.id;
+        if(this.selectedVpcSelected.id === 'use-existing') {
+            vpcId = this.selectedVpcSelected.vpcId;
         }
 
         const body = {
@@ -261,8 +261,7 @@ class ClusterCreateForm extends PolymerElement {
                 cloud: {
                     provider: this.selectedClusterProviderSelected,
                     region: this.selectedClusterRegionSelected,
-                    vpc: this.selectedVpcSelected,
-                    vpcId: vpcId,
+                    vpc: vpcId,
                     domain: "shalb.net"
                 },
                 provisioner: {
@@ -277,7 +276,7 @@ class ClusterCreateForm extends PolymerElement {
 
         const createCluster = this.$.createCluster;
         createCluster.method = "POST";
-        createCluster.url = "/cluster";
+        createCluster.url = "http://localhost:5447/cluster";
         createCluster.body = JSON.stringify(body);
 
         createCluster.generateRequest();
