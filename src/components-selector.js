@@ -18,10 +18,10 @@ class ComponentsSelector extends PolymerElement {
     }
 
     onComponentSelect() {
-        let clusterComponents = this.$.componentsId.checked;
-        this.dispatchEvent(new CustomEvent('component-id-selected',
+        this.item.selected = this.$.componentsId.checked;
+        this.dispatchEvent(new CustomEvent('component-selected',
             {
-                detail: clusterComponents,
+                detail: this.item,
                 bubbles: true,
                 composed: true
             }
