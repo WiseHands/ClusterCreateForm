@@ -185,8 +185,7 @@ class ClusterCreateForm extends PolymerElement {
             url: {
                 type: String,
                 value: 'src/cluster.json'
-            },
-            selectedComponents: []
+            }
         };
     }
 
@@ -199,13 +198,9 @@ class ClusterCreateForm extends PolymerElement {
         this.addEventListener('instance-type-selected', this.onProvisionerTypeSelected);
         this.addEventListener('vpc-selected', this.onVpcSelected);
         this.addEventListener('vpc-id-entered', this.onVpcIdEntered);
-        this.addEventListener('component-selected', this.onClusterComponentsChecked);
-        this.addEventListener('default-component-selected', this.onDefaultClusterComponentsChecked);
+
 
         this._generateRequest('GET', this.url);
-
-        this.selectedComponents = [];
-
     }
 
     onClusterRegionSelected(event) {
@@ -238,48 +233,6 @@ class ClusterCreateForm extends PolymerElement {
         this.vpcId = event.detail;
     }
 
-    onClusterComponentsChecked(event) {
-        console.log('onClusterComponentsChecked', event.detail);
-        let component = event.detail;
-        if(component.selected) {
-            delete component.selected;
-            this.selectedComponents.push(component);
-        } else {
-            let _index = 0;
-            this.selectedComponents.forEach(
-                (item, index) => {
-                    if(item.name === component.name) {
-                        _index = index;
-                    }
-                }
-            );
-            this.selectedComponents.splice(_index, 1);
-        }
-
-        this.componentsId = event.detail;
-    }
-
-    onDefaultClusterComponentsChecked(event) {
-        console.log('onDefaultClusterComponentsChecked', event.detail);
-        let component = event.detail;
-        if(component.selected) {
-            delete component.selected;
-            this.selectedComponents.push(component);
-        } else {
-            let _index = 0;
-            this.selectedComponents.forEach(
-                (item, index) => {
-                    if(item.name === component.name) {
-                        _index = index;
-                    }
-                }
-            );
-            this.selectedComponents.splice(_index, 1);
-        }
-
-        this.componentsId = event.detail;
-    }
-
     _generateRequest(method, url) {
         const ajax = this.$.ajax;
         ajax.method = method;
@@ -298,6 +251,12 @@ class ClusterCreateForm extends PolymerElement {
         if(this.selectedVpcSelected.id === 'use-existing') {
             vpcId = this.selectedVpcSelected.vpcId;
         }
+        const checkedComponents = [];
+        const components = this.shadowRoot.querySelectorAll('components-selector');
+        components.forEach(component => {
+            if (component.item.selected)
+                checkedComponents.push(component.item);
+        });
 
         const body = {
             cluster: {
@@ -314,12 +273,12 @@ class ClusterCreateForm extends PolymerElement {
                     instanceType: this.selectedProvisionerTypeSelected
                 }
             },
-            apps: this.selectedComponents
+            apps: checkedComponents
         };
 
         const createCluster = this.$.createCluster;
         createCluster.method = "POST";
-        createCluster.url = "/cluster";
+        createCluster.url = "http://127.0.0.1:5447/cluster";
         createCluster.body = JSON.stringify(body);
 
         createCluster.generateRequest();

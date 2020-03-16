@@ -13,39 +13,18 @@ class ComponentsSelector extends PolymerElement {
                     margin: 0.5em;
                 }
             </style>
-  <paper-checkbox id="componentsId" name="[[item.id]]" on-change="onComponentSelect" checked="[[item.default]]">[[item.name]]</paper-checkbox>
+  <paper-checkbox id="componentsId" name="[[item.id]]" on-change="_setSelectedState" checked="[[item.default]]">[[item.name]]</paper-checkbox>
         `;
-    }
-
-    onComponentSelect() {
-        this.item.selected = this.$.componentsId.checked;
-        this.dispatchEvent(new CustomEvent('component-selected',
-            {
-                detail: this.item,
-                bubbles: true,
-                composed: true
-            }
-        ));
     }
 
     static get observers() {
         return [
-            'componentsChecked(item)'
+            '_setSelectedState(item)'
         ]
     }
 
-    componentsChecked(item) {
-        console.log('componentsChecked', item);
-       if(item.default) {
-           this.dispatchEvent(new CustomEvent('default-component-selected',
-               {
-                   detail: item,
-                   bubbles: true,
-                   composed: true
-               }
-           ));
-       }
-
+    _setSelectedState() {
+        this.item.selected = this.$.componentsId.checked;
     }
 
 }
