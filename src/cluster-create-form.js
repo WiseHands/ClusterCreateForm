@@ -160,7 +160,7 @@ class ClusterCreateForm extends PolymerElement {
     </template>
   </div>
   <div class="card-content">
-    <a href="url">... more components</a>
+<!--    <a href="url">... more components</a>-->
   </div>
   <div class="border"></div>
 
@@ -169,6 +169,7 @@ class ClusterCreateForm extends PolymerElement {
   </div>
 
     <pre><code class="yaml" id="responseYaml">...</code></pre>
+    <a href="https://github.com/WiseHands/ClusterDev/blob/master/config.yaml">Link to config file on GitHub</a>
 </paper-card>
 
             <iron-ajax id="ajax" handle-as="json" on-last-response-changed="_onLastResponseChanged"></iron-ajax>
@@ -318,7 +319,7 @@ class ClusterCreateForm extends PolymerElement {
 
         const createCluster = this.$.createCluster;
         createCluster.method = "POST";
-        createCluster.url = "/cluster";
+        createCluster.url = "http://127.0.0.1:5447/cluster";
         createCluster.body = JSON.stringify(body);
 
         createCluster.generateRequest();
